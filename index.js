@@ -1,0 +1,5 @@
+console.log(process.env.FMWW_SIGN_IN_URL)
+console.log(process.env.FMWW_ACCESS_KEY_ID)
+console.log(process.env.FMWW_USER_NAME)
+console.log(process.env.FMWW_SECRET_ACCESS_KEY)
+console.log(process.env.FMWW_PASSWORD)

@@ -6,8 +6,8 @@ function debugOf(page) {
   return page
 }
 
-// •”–åƒR[ƒh‘SŽæ“¾
-// –ß‚è’lF[[•”–åƒR[ƒh,•”–å–¼]]
+// éƒ¨é–€ã‚³ãƒ¼ãƒ‰å…¨å–å¾—
+// æˆ»ã‚Šå€¤ï¼š[[éƒ¨é–€ã‚³ãƒ¼ãƒ‰,éƒ¨é–€å]]
 const fetchItems = async (page) => {
   return await page
     .evaluate(async () => {
@@ -15,7 +15,7 @@ const fetchItems = async (page) => {
     }, {timeout: 0})
 }
 
-// ŒŸõðŒ‚Éƒ}ƒbƒ`‚·‚é¤•iƒ}ƒXƒ^ƒGƒNƒZƒ‹‚ðƒ[ƒJƒ‹•Û‘¶‚µ‚ÄAŒŸõðŒ“ü—Í‰æ–Ê‚É–ß‚·
+// æ¤œç´¢æ¡ä»¶ã«ãƒžãƒƒãƒã™ã‚‹å•†å“ãƒžã‚¹ã‚¿ã‚¨ã‚¯ã‚»ãƒ«ã‚’ãƒ­ãƒ¼ã‚«ãƒ«ä¿å­˜ã—ã¦ã€æ¤œç´¢æ¡ä»¶å…¥åŠ›ç”»é¢ã«æˆ»ã™
 const downloadProductsExcel = async (page, options) => {
 }
 
@@ -42,7 +42,7 @@ const signIn = async (page) => {
 }
 
 const decideMenuItem = async (page) => {
-  // ŠO•”ƒCƒ“ƒ^[ƒtƒF[ƒX -> ‘ÎHT -> ¤•iƒ}ƒXƒ^ƒƒ“ƒeƒiƒ“ƒX -> Æ‰ï
+  // å¤–éƒ¨ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ -> å¯¾HT -> å•†å“ãƒžã‚¹ã‚¿ãƒ¡ãƒ³ãƒ†ãƒŠãƒ³ã‚¹ -> ç…§ä¼š
   await page.waitForSelector('#menu\\:0 div:nth-child(14)')
   await page.waitForSelector('#menu\\:1 div:nth-child(1)')
   await page.evaluate(_ => {
@@ -65,7 +65,19 @@ const decideMenuItem = async (page) => {
   await page.screenshotIfDebug({ path: 'criteria.png' });
 }
 
+function red(s) {
+  return '\u001b[31m' + s + '\u001b[0m'
+}
+
 (async () => {
+  if(process.argv.length < 3) {
+    process.stderr.write('\u001b[47m' + red('ã‚³ãƒžãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³å¼•æ•°ä¸è¶³ã€‚ä¿å­˜ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æŒ‡å®šã—ã¦ãã ã•ã„ã€‚') + '\u001b[0m')
+    return
+  }
+
+  // å•†å“ãƒžã‚¹ã‚¿ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã™ã‚‹ä¸€æ™‚ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
+  const temp = process.argv[2]
+
   console.log('launch')
   const browser = await puppeteer.launch({
     headless: true,

@@ -1,4 +1,9 @@
+const path = require('path');
 const puppeteer = require('puppeteer');
+const {promisify} = require('util');
+const fs = require('fs');
+
+const writeFileAsync = promisify(fs.writeFile);
 
 function debugOf(page) {
   const isDebug = false
@@ -21,6 +26,50 @@ const sleep = (ms) => {
   })
 }
 
+const download = async (page) => {
+  return await page
+    .evaluate(async () => {
+      const form = document.querySelector('form[id="form1"]');
+      const data = new FormData(form);
+      data.set('form1:execute', 'execute')
+
+      let xs={};
+      for(var pair of data.entries()) {
+        xs[pair[0]] = pair[1];
+      }
+      const params = createURLSearchParams(xs)
+      return await ff(form.action, {
+        method: 'POST',
+        credentials: 'include',
+        body: params,
+      })
+
+      function ff(action, op) {
+        return new Promise((resolve) => {
+          const req = new XMLHttpRequest();
+          req.open(op.method, action, true)
+          req.responseType = 'arraybuffer'
+          req.withCredentials = true
+
+          req.onload = function (oEvent) {
+            let arrayBuffer = req.response;
+            if (arrayBuffer) {
+              let byteArray = new Uint8Array(arrayBuffer);
+              resolve(byteArray)
+            }
+          };
+          req.send(op.body);
+        })
+      }
+
+      function createURLSearchParams(data) {
+        const params = new URLSearchParams();
+        Object.keys(data).forEach(key => params.append(key, data[key]));
+        return params;
+      }
+    }, {timeout: 0})
+}
+
 // 検索条件にマッチする商品マスタエクセルをローカル保存して、検索条件入力画面に戻す
 const downloadProductsExcel = async (page, options) => {
   const itemCode = options.itemCode || ''
@@ -36,8 +85,12 @@ const downloadProductsExcel = async (page, options) => {
   console.log('is ready to download ' + filename)
   await page.screenshotIfDebug({ path: 'is_ready_to_download_' + filename + '.png' });
 
-  // TODO:ダウンロード処理
-  await sleep(3000)// ダミー
+  // ダウンロード処理
+  const uint8 = await download(page)
+  const xs = Object.keys(uint8).map(key => uint8[key])
+  const content = Buffer.from(xs)
+  // encodingをnullにして、生データのまま書き込む
+  await writeFileAsync(path.join(options.saveTo, filename), content, {encoding: null});
 
   // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
   await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())

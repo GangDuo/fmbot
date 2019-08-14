@@ -6,6 +6,19 @@ function debugOf(page) {
   return page
 }
 
+// 部門コード全取得
+// 戻り値：[[部門コード,部門名]]
+const fetchItems = async (page) => {
+  return await page
+    .evaluate(async () => {
+      return Array.from(document.getElementById('item_list:select').children).map(a => a.textContent.split(/\s+/))
+    }, {timeout: 0})
+}
+
+// 検索条件にマッチする商品マスタエクセルをローカル保存して、検索条件入力画面に戻す
+const downloadProductsExcel = async (page, options) => {
+}
+
 const signIn = async (page) => {
   await  page.waitForSelector('#form1\\:client')
   await Promise.all([
@@ -68,6 +81,11 @@ const decideMenuItem = async (page) => {
 
   await signIn(page)
   await decideMenuItem(page)
+
+  const xs = await fetchItems(page)
+  for (let i = 0; i < xs.length; i++) {
+    await downloadProductsExcel(page, {itemCode: xs[i][0]})
+  };
 
   await browser.close();
 })();

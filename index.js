@@ -15,8 +15,33 @@ const fetchItems = async (page) => {
     }, {timeout: 0})
 }
 
+const sleep = (ms) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
+
 // 検索条件にマッチする商品マスタエクセルをローカル保存して、検索条件入力画面に戻す
 const downloadProductsExcel = async (page, options) => {
+  const itemCode = options.itemCode || ''
+  const barcode = options.barcode || ''
+  const prefix = itemCode ? itemCode + '_' : barcode + '_'
+  const filename = prefix + 'products.xlsx'
+
+  await page.evaluate(x => document.getElementById('item_list').value = x, itemCode)
+  await page.evaluate(x => document.getElementById('barcode').value = x, barcode)
+  await page.evaluate(x => document.getElementById('excel_button_ex').click())
+  await page.waitFor(() => !!document.querySelector('#loading'), {timeout: 0})
+  await page.waitFor(() => document.querySelector('#loading').style.display === 'none', {timeout: 0})
+  console.log('is ready to download ' + filename)
+  await page.screenshotIfDebug({ path: 'is_ready_to_download_' + filename + '.png' });
+
+  // TODO:ダウンロード処理
+  await sleep(3000)// ダミー
+
+  // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
+  await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())
+  await sleep(500)
 }
 
 const signIn = async (page) => {

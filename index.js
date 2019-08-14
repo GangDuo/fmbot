@@ -96,7 +96,7 @@ function red(s) {
 
   const xs = await fetchItems(page)
   for (let i = 0; i < xs.length; i++) {
-    await downloadProductsExcel(page, {itemCode: xs[i][0]})
+    await downloadProductsExcel(page, {itemCode: xs[i][0], saveTo: temp})
   };
 
   await browser.close();

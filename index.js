@@ -2,6 +2,7 @@ const path = require('path');
 const puppeteer = require('puppeteer');
 const {promisify} = require('util');
 const fs = require('fs');
+const widget = require('./widget');
 
 const readFileAsync = promisify(fs.readFile);
 const writeFileAsync = promisify(fs.writeFile);
@@ -83,7 +84,6 @@ const downloadProductsExcel = async (page, options) => {
   await page.evaluate(x => document.getElementById('excel_button_ex').click())
   await page.waitFor(() => !!document.querySelector('#loading'), {timeout: 0})
   await page.waitFor(() => document.querySelector('#loading').style.display === 'none', {timeout: 0})
-  console.log('is ready to download ' + filename)
   await page.screenshotIfDebug({ path: 'is_ready_to_download_' + filename + '.png' });
 
   // ダウンロード処理
@@ -181,7 +181,13 @@ function red(s) {
   await decideMenuItem(page)
 
   const xs = janCodeList.length > 0 ? janCodeList : await fetchItems(page)
+  const width = 30
   for (let i = 0; i < xs.length; i++) {
+    const msg = '[' + (i+1) + '/' + xs.length + ']: ' + xs[i]
+    const formatedMsg = (width - msg.length) > 0 ? msg + ' '.repeat(width - msg.length) : msg.substr(0, width)
+    process.stdout.write('\r' + formatedMsg + '\n')
+    widget.progress(xs.length, i)
+
     let options = {saveTo: temp}
     if(janCodeList.length > 0) {
       options.barcode = xs[i]
@@ -189,6 +195,9 @@ function red(s) {
       options.itemCode = xs[i][0]
     }
     await downloadProductsExcel(page, options)
+
+    widget.progress(xs.length, (i+1))
+    process.stdout.write("\033[1A")
   };
 
   await browser.close();

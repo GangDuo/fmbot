@@ -3,6 +3,7 @@ const puppeteer = require('puppeteer');
 const {promisify} = require('util');
 const fs = require('fs');
 
+const readFileAsync = promisify(fs.readFile);
 const writeFileAsync = promisify(fs.writeFile);
 
 function debugOf(page) {
@@ -156,6 +157,13 @@ function red(s) {
   // 商品マスタをダウンロードする一時ディレクトリ
   const temp = process.argv[2]
 
+  // 指定したjanのみを抽出する場合
+  const janCodeList = await (async (file) => {
+    const buf = await readFileAsync(file)
+    return buf.toString().split(/\r\n/).filter(a => a.length > 0)
+  })(process.argv[3]).catch(_ => [])
+  console.log(janCodeList)
+
   console.log('launch')
   const browser = await puppeteer.launch({
     headless: true,
@@ -172,9 +180,15 @@ function red(s) {
   await signIn(page)
   await decideMenuItem(page)
 
-  const xs = await fetchItems(page)
+  const xs = janCodeList.length > 0 ? janCodeList : await fetchItems(page)
   for (let i = 0; i < xs.length; i++) {
-    await downloadProductsExcel(page, {itemCode: xs[i][0], saveTo: temp})
+    let options = {saveTo: temp}
+    if(janCodeList.length > 0) {
+      options.barcode = xs[i]
+    } else {
+      options.itemCode = xs[i][0]
+    }
+    await downloadProductsExcel(page, options)
   };
 
   await browser.close();

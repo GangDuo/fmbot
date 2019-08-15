@@ -149,6 +149,11 @@ function red(s) {
 }
 
 (async () => {
+  // コマンドライン引数
+  for (let i = 0; i < process.argv.length; i++) {
+    console.log("argv[" + i + "] = " + process.argv[i]);
+  }
+
   if(process.argv.length < 3) {
     process.stderr.write('\u001b[47m' + red('コマンドライン引数不足。保存ディレクトリを指定してください。') + '\u001b[0m')
     return

@@ -1,21 +1,11 @@
 @echo off
-pushd %~dp0
-set PATH="%~dp0";%PATH%
+setlocal
+
 set FMWW_SIGN_IN_URL=https://
 set FMWW_ORGANIZATION_CODE=
 set FMWW_ORGANIZATION_PASS=
 set FMWW_USER_CODE=
 set FMWW_USER_PASS=
-
-echo.
-echo "              ________  _______  ____  ______
-echo "             / ____/  |/  / __ )/ __ \/_  __/
-echo "            / /_  / /|_/ / __  / / / / / /   
-echo "           / __/ / /  / / /_/ / /_/ / / /    
-echo "          /_/   /_/  /_/_____/\____/ /_/     
-echo.
-echo.
-echo.
 
 :meta
 echo --------------------------------
@@ -42,8 +32,6 @@ if /i {%ANSWER%}=={yes} (goto :yes) ELSE (
   goto :meta
 )
 
-EXIT
-
 :yes
 
 rem èàóùäJén
@@ -59,4 +47,3 @@ echo FMWW_PASSWORD=%FMWW_USER_PASS%
 type .env
 
 call npm install
-pause

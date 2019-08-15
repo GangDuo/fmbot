@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<package>
+<job>
+	<?job error="false" debug="false"?>
+	<!-- Excel -->
+	<reference guid="00020813-0000-0000-C000-000000000046"></reference>
+    <runtime>
+        <!-- 説明テキスト -->
+        <description>標準入力されたエクセルのファイルパスを順番に開き、1番目のシートを新規ブックの1シートへすべてコピーし結合する。</description>
+
+        <named name="file"
+               helpstring="結果出力用エクセルファイルのパス、指定がなければ新規ブックに出力します。"
+               type="string"
+               required="false"/>
+
+        <!-- ジョブの使用例 -->
+        <example>
+        </example>
+    </runtime>
+	<script language="JScript" src="main.js" />
+</job>
+</package>

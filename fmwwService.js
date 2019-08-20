@@ -133,7 +133,6 @@ const decideMenuItem = async (page) => {
 }
 
 exports.fetchItems = fetchItems
-exports.download = download
 exports.downloadProductsExcel = downloadProductsExcel
 exports.signIn = signIn
 exports.decideMenuItem = decideMenuItem

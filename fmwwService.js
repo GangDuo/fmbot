@@ -11,6 +11,12 @@ const sleep = (ms) => {
   })
 }
 
+const waitUntilLoadingIsOver = async (page) => {
+  const  disableTimeout = {timeout: 0}
+  await page.waitFor(() => !!document.querySelector('#loading'), disableTimeout)
+  await page.waitFor(() => document.querySelector('#loading').style.display === 'none', disableTimeout)
+}
+
 // 部門コード全取得
 // 戻り値：[[部門コード,部門名]]
 const fetchItems = async (page) => {
@@ -74,8 +80,7 @@ const downloadProductsExcel = async (page, options) => {
   await page.evaluate(x => document.getElementById('item_list').value = x, itemCode)
   await page.evaluate(x => document.getElementById('barcode').value = x, barcode)
   await page.evaluate(Native.clickExcelButton)
-  await page.waitFor(() => !!document.querySelector('#loading'), {timeout: 0})
-  await page.waitFor(() => document.querySelector('#loading').style.display === 'none', {timeout: 0})
+  await waitUntilLoadingIsOver(page)
   await page.screenshotIfDebug({ path: 'is_ready_to_download_' + filename + '.png' });
 
   // ダウンロード処理
@@ -122,8 +127,7 @@ const decideMenuItem = async (page) => {
     }),
     page.waitForNavigation({timeout: 60000, waitUntil: 'domcontentloaded'})
   ])
-  await page.waitFor(() => !!document.querySelector('#loading'))
-  await page.waitFor(() => document.querySelector('#loading').style.display === 'none')
+  await waitUntilLoadingIsOver(page)
   console.log('criteria')
   await page.screenshotIfDebug({ path: 'criteria.png' });
 }

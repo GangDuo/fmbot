@@ -1,6 +1,7 @@
 const path = require('path');
 const {promisify} = require('util');
 const fs = require('fs');
+var Native = require('./Native');
 
 const writeFileAsync = promisify(fs.writeFile);
 
@@ -72,7 +73,7 @@ const downloadProductsExcel = async (page, options) => {
 
   await page.evaluate(x => document.getElementById('item_list').value = x, itemCode)
   await page.evaluate(x => document.getElementById('barcode').value = x, barcode)
-  await page.evaluate(x => document.getElementById('excel_button_ex').click())
+  await page.evaluate(Native.clickExcelButton)
   await page.waitFor(() => !!document.querySelector('#loading'), {timeout: 0})
   await page.waitFor(() => document.querySelector('#loading').style.display === 'none', {timeout: 0})
   await page.screenshotIfDebug({ path: 'is_ready_to_download_' + filename + '.png' });
@@ -92,16 +93,8 @@ const downloadProductsExcel = async (page, options) => {
 const signIn = async (page) => {
   await  page.waitForSelector('#form1\\:client')
   await Promise.all([
-    page.evaluate(arg => {
-      document.getElementById('form1:client').value = arg.FMWW_ACCESS_KEY_ID
-      document.getElementById('form1:person').value = arg.FMWW_USER_NAME
-      document.getElementById('form1:clpass').value = arg.FMWW_SECRET_ACCESS_KEY
-      document.getElementById('form1:pspass').value = arg.FMWW_PASSWORD
-
-      setTimeout(() => {
-        document.getElementById('form1:login').click()
-      }, 100)
-    }, { FMWW_ACCESS_KEY_ID     : process.env.FMWW_ACCESS_KEY_ID,
+    page.evaluate(Native.signIn, {
+         FMWW_ACCESS_KEY_ID     : process.env.FMWW_ACCESS_KEY_ID,
          FMWW_USER_NAME         : process.env.FMWW_USER_NAME,
          FMWW_SECRET_ACCESS_KEY : process.env.FMWW_SECRET_ACCESS_KEY,
          FMWW_PASSWORD          : process.env.FMWW_PASSWORD }),

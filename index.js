@@ -64,6 +64,7 @@ function red(s) {
     let options = {saveTo: temp}
     if(janCodeList.length > 0) {
       options.barcode = xs[i]
+      options.prefix = ('0'.repeat(7) + (i + 1)).substr(-8)
     } else {
       options.itemCode = xs[i][0]
     }

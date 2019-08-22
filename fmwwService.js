@@ -74,7 +74,7 @@ const download = async (page) => {
 const downloadProductsExcel = async (page, options) => {
   const itemCode = options.itemCode || ''
   const barcode = options.barcode || ''
-  const prefix = itemCode ? itemCode + '_' : barcode + '_'
+  const prefix = options.prefix ? options.prefix : (itemCode ? itemCode + '_' : barcode + '_')
   const filename = prefix + 'products.xlsx'
 
   await page.evaluate(x => document.getElementById('item_list').value = x, itemCode)

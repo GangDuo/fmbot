@@ -46,4 +46,4 @@ echo FMWW_PASSWORD=%FMWW_USER_PASS%
 
 type .env
 
-call npm install
+call npm install --production

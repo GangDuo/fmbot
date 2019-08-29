@@ -17,6 +17,16 @@ const waitUntilLoadingIsOver = async (page) => {
   await page.waitFor(() => document.querySelector('#loading').style.display === 'none', disableTimeout)
 }
 
+function debugOf(page) {
+  const isDebug = false
+  page.screenshotIfDebug = isDebug ? page.screenshot : () => { return Promise.resolve() }
+  return page
+}
+
+const newPage = async (browser) => {
+  return debugOf(await browser.newPage())
+}
+
 // 部門コード全取得
 // 戻り値：[[部門コード,部門名]]
 const fetchItems = async (page) => {
@@ -132,6 +142,7 @@ const decideMenuItem = async (page) => {
   await page.screenshotIfDebug({ path: 'criteria.png' });
 }
 
+exports.newPage = newPage
 exports.fetchItems = fetchItems
 exports.downloadProductsExcel = downloadProductsExcel
 exports.signIn = signIn

@@ -6,12 +6,6 @@ const fmww = require('./fmwwService')
 
 const readFileAsync = promisify(fs.readFile);
 
-function debugOf(page) {
-  const isDebug = false
-  page.screenshotIfDebug = isDebug ? page.screenshot : () => { return Promise.resolve() }
-  return page
-}
-
 function red(s) {
   return '\u001b[31m' + s + '\u001b[0m'
 }
@@ -46,7 +40,7 @@ function red(s) {
       '--window-size=500,500',
     ]
   });
-  const page = debugOf(await browser.newPage())
+  const page = await fmww.newPage(browser)
   console.log(process.env.FMWW_SIGN_IN_URL)
   await page.goto(process.env.FMWW_SIGN_IN_URL)
 

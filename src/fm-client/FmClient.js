@@ -42,10 +42,8 @@ module.exports = class FmClient extends Promiseable {
 
   signIn(user) {
     this.enqueue(async () => {
-      return new Promise(function(success, failure) {
-        console.log('_signIn')
-        setTimeout(() => success(true), 1000)
-      })
+      await fmww.signIn(this.page, user)
+      return true
     }, [user])
     return this
   }

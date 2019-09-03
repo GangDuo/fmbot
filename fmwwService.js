@@ -124,10 +124,10 @@ const downloadProductsExcel = async (page, options) => {
   await sleep(500)
 }
 
-const signIn = async (page) => {
+const signIn = async (page, user) => {
   await  page.waitForSelector('#form1\\:client')
   await Promise.all([
-    page.evaluate(Native.signIn, {
+    page.evaluate(Native.signIn, user || {
          FMWW_ACCESS_KEY_ID     : process.env.FMWW_ACCESS_KEY_ID,
          FMWW_USER_NAME         : process.env.FMWW_USER_NAME,
          FMWW_SECRET_ACCESS_KEY : process.env.FMWW_SECRET_ACCESS_KEY,
@@ -136,6 +136,7 @@ const signIn = async (page) => {
   ])
   console.log('signined')
   await page.screenshotIfDebug({ path: 'signined.png' });
+  return Promise.resolve(true)
 }
 
 const decideMenuItem = async (page) => {

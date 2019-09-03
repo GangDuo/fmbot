@@ -18,6 +18,7 @@ describe('FmClient', function () {
   }) 
   
   after(async function() {
+    await client.quit()
     client = null
     ability = null
   }) 

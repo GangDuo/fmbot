@@ -1,10 +1,16 @@
 const Queue = require('../collections/Queue')
 const Promiseable = require('./Promiseable')
 const Nop = require('./Nop')
+const fmww = require('../../fmwwService')
 
 module.exports = class FmClient extends Promiseable {
   constructor() {
     super(new Queue)
+
+    // initialize
+    this.enqueue(async () => {
+      this.browser = await fmww.createBrowserInstance()
+    })
   }
 
   open(url) {
@@ -14,6 +20,13 @@ module.exports = class FmClient extends Promiseable {
         setTimeout(() => success({status:{code: 200, text: 'OK'}}), 1000)
       })
     }, [url])
+    return this
+  }
+
+  quit() {
+    this.enqueue(async () => {
+      await this.browser.close()
+    })
     return this
   }
 

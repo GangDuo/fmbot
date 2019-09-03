@@ -1,6 +1,7 @@
 const Queue = require('../collections/Queue')
 const Promiseable = require('./Promiseable')
 const Nop = require('./Nop')
+const ProductMaintenance = require('./abilities/external-interface/ProductMaintenance')
 const fmww = require('../../fmwwService')
 
 module.exports = class FmClient extends Promiseable {
@@ -48,8 +49,15 @@ module.exports = class FmClient extends Promiseable {
     return this
   }
 
-  createAbility(options) {
-    return new Nop(this.queue)
+  createAbility(options = {}) {
+    const path = options.path || 0
+    switch(path) {
+      case ProductMaintenance.path:
+        return new ProductMaintenance(this.queue)
+
+      default:
+        return new Nop(this.queue)
+    }
     // 呼び出し元でawaitしても、newしているけどnullが返る
     return Promise.resolve(new Nop(this.queue))
     // 下記の形式ならinstanceにnewした結果が格納される

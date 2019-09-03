@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const FmClient = require('../../src/fm-client/FmClient');
 const Nop = require('../../src/fm-client/Nop')
+const ProductMaintenance = require('../../src/fm-client/abilities/external-interface/ProductMaintenance')
 
 describe('FmClient', function () {
   let client = null
@@ -52,4 +53,13 @@ describe('FmClient', function () {
       .search({jan: jan})
     expect(goods.jan).to.equal(jan);
   });
+
+  it('ProductMaintenance', async function () {
+    await client
+      .open(process.env.FMWW_SIGN_IN_URL)
+      .signIn(user)
+    const ability = client.createAbility({path: ProductMaintenance.path})
+    expect(ability).to.be.an.instanceof(ProductMaintenance);
+  });
+
 });

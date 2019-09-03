@@ -1,3 +1,4 @@
+const puppeteer = require('puppeteer');
 const path = require('path');
 const {promisify} = require('util');
 const fs = require('fs');
@@ -21,6 +22,24 @@ function debugOf(page) {
   const isDebug = false
   page.screenshotIfDebug = isDebug ? page.screenshot : () => { return Promise.resolve() }
   return page
+}
+
+const createBrowserInstance = () => {
+  return new Promise(async (success, failure) => {
+    try{
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--window-size=500,500',
+        ]
+      });
+      success(browser)
+    } catch (err) {
+      failure(err)
+    }
+  })
 }
 
 const newPage = async (browser) => {
@@ -142,6 +161,7 @@ const decideMenuItem = async (page) => {
   await page.screenshotIfDebug({ path: 'criteria.png' });
 }
 
+exports.createBrowserInstance = createBrowserInstance
 exports.newPage = newPage
 exports.fetchItems = fetchItems
 exports.downloadProductsExcel = downloadProductsExcel

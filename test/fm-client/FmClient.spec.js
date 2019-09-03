@@ -25,7 +25,8 @@ describe('FmClient', function () {
 
   it('open', async function () {
     const response = await client.open(process.env.FMWW_SIGN_IN_URL)
-    expect(response.status.code).to.equal(200);
+    expect(response.status()).to.equal(200);
+    expect(response.statusText().toUpperCase()).to.equal('OK')
   });
 
   it('signIn', async function () {

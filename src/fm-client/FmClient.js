@@ -8,17 +8,27 @@ module.exports = class FmClient extends Promiseable {
     super(new Queue)
 
     // initialize
+    this.responses = new Queue
+
     this.enqueue(async () => {
       this.browser = await fmww.createBrowserInstance()
+      this.page = await fmww.newPage(this.browser)
+
+      // 各リクエストのレスポンスを検知
+      this.page.on('response', response => {
+        this.responses.enqueue(response)
+        console.log(response.status(), response.url()) // 全リクエストのステータスコードとURLをlog
+        if (300 > response.status() && 200 <= response.status()) return;
+        console.warn('status error', response.status(), response.url()) // ステータスコード200番台以外をlog
+      });
     })
   }
 
   open(url) {
     this.enqueue(async () => {
-      return new Promise(function(success, failure) {
-        console.log('_open')
-        setTimeout(() => success({status:{code: 200, text: 'OK'}}), 1000)
-      })
+      this.responses.clear()
+      await this.page.goto(url)
+      return this.responses.dequeue()
     }, [url])
     return this
   }

@@ -53,7 +53,7 @@ module.exports = class FmClient extends Promiseable {
     const path = options.path || 0
     switch(path) {
       case ProductMaintenance.path: {
-        this.ability = new ProductMaintenance()
+        this.ability = new ProductMaintenance(this.page)
         break;
       }
 

@@ -11,7 +11,7 @@ describe('FmClient', function () {
     FMWW_SECRET_ACCESS_KEY : process.env.FMWW_SECRET_ACCESS_KEY,
     FMWW_PASSWORD          : process.env.FMWW_PASSWORD
   }
-  const jan = '0000000000'
+  const jan = '0000001002478'
 
   before(async function() {
     client = new FmClient();
@@ -59,7 +59,11 @@ describe('FmClient', function () {
     const ability = await client.createAbility({path: ProductMaintenance.path})
     expect(ability).to.be.an.instanceof(ProductMaintenance);
     
-    const goods = await client.search({jan: jan})
+    const goods = await client.search({
+      saveTo: process.cwd(),
+      barcode: jan,
+      prefix: '0'.repeat(4)
+    })
     expect(goods.jan).to.equal(jan);
   });
 

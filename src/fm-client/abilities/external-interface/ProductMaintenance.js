@@ -10,9 +10,14 @@ module.exports = class ProductMaintenance extends PageProperty {
     super(page)
   }
 
+  async enable() {
+    console.log('ProductMaintenance.enable')
+    await fmww.decideMenuItem(this.page)
+    return true
+  }
+
   async search(options) {
     console.log('ProductMaintenance.search')
-    await fmww.decideMenuItem(this.page)
     await fmww.downloadProductsExcel(this.page, options)
     return {jan: options.barcode}
   }

@@ -64,6 +64,7 @@ module.exports = class FmClient extends Promiseable {
     }
 
     this.enqueue(async () => {
+      await this.ability.enable()
       return this.ability
     })
     return this

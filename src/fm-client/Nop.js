@@ -1,4 +1,11 @@
 module.exports = class Nop {
+  enable() {
+    return new Promise(function(success, failure) {
+      console.log('Nop.enable')
+      setTimeout(() => success(true), 1000)
+    })
+  }
+
   search(op) {
     return new Promise(function(success, failure) {
       console.log('Nop.search')

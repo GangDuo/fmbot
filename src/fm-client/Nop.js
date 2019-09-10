@@ -1,29 +1,20 @@
-const Promiseable = require('./Promiseable')
-
-module.exports = class Nop extends Promiseable {
-  constructor(queue) {
-    super(queue)
-  }
-
+module.exports = class Nop {
   search(op) {
-     this.enqueue(async () => {
-      return new Promise(function(success, failure) {
-        console.log('search')
-        setTimeout(() => success({jan: op.jan}), 1000)
-      })
+    return new Promise(function(success, failure) {
+      console.log('Nop.search')
+      setTimeout(() => success({jan: op.jan}), 1000)
     })
-    return this
   }
 
   create() {
-     console.log('create')
+     console.log('Nop.create')
   }
 
   update() {
-     console.log('update')
+     console.log('Nop.update')
   }
 
   delete() {
-     console.log('delete')
+     console.log('Nop.delete')
   }
 }

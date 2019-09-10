@@ -5,7 +5,6 @@ const ProductMaintenance = require('../../src/fm-client/abilities/external-inter
 
 describe('FmClient', function () {
   let client = null
-  let ability = null
   const user = {
     FMWW_ACCESS_KEY_ID     : process.env.FMWW_ACCESS_KEY_ID,
     FMWW_USER_NAME         : process.env.FMWW_USER_NAME,
@@ -21,7 +20,6 @@ describe('FmClient', function () {
   after(async function() {
     await client.quit()
     client = null
-    ability = null
   }) 
 
   it('open', async function () {
@@ -35,13 +33,13 @@ describe('FmClient', function () {
     expect(response).be.true
   });
 
-  it('createAbility', function () {
-    ability = client.createAbility()
+  it('createAbility', async function () {
+    const ability = await client.createAbility()
     expect(ability).to.be.an.instanceof(Nop);
   });
 
   it('search', async function () {
-    const goods = await ability.search({jan: jan})
+    const goods = await client.search({jan: jan})
     expect(goods.jan).to.equal(jan)
   });
 
@@ -58,8 +56,11 @@ describe('FmClient', function () {
     await client
       .open(process.env.FMWW_SIGN_IN_URL)
       .signIn(user)
-    const ability = client.createAbility({path: ProductMaintenance.path})
+    const ability = await client.createAbility({path: ProductMaintenance.path})
     expect(ability).to.be.an.instanceof(ProductMaintenance);
+    
+    const goods = await client.search({jan: jan})
+    expect(goods.jan).to.equal(jan);
   });
 
 });

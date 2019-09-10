@@ -52,15 +52,43 @@ module.exports = class FmClient extends Promiseable {
   createAbility(options = {}) {
     const path = options.path || 0
     switch(path) {
-      case ProductMaintenance.path:
-        return new ProductMaintenance(this.queue)
+      case ProductMaintenance.path: {
+        this.ability = new ProductMaintenance()
+        break;
+      }
 
-      default:
-        return new Nop(this.queue)
+      default: {
+        this.ability = new Nop()
+        break;
+      }
     }
-    // 呼び出し元でawaitしても、newしているけどnullが返る
-    return Promise.resolve(new Nop(this.queue))
-    // 下記の形式ならinstanceにnewした結果が格納される
-    return Promise.resolve({instance: new Nop(this.queue)})
+
+    this.enqueue(async () => {
+      return this.ability
+    })
+    return this
+  }
+
+  search(op) {
+    console.log('FmClient.search')
+    this.enqueue(async () => {
+      return await this.ability.search(op)
+    })
+    return this
+  }
+
+  create() {
+    console.log('FmClient.create')
+    return this
+  }
+
+  update() {
+    console.log('FmClient.update')
+    return this
+  }
+
+  delete() {
+    console.log('FmClient.delete')
+    return this
   }
 }

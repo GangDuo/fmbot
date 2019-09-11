@@ -44,19 +44,21 @@ describe('FmClient', function () {
   });
 
   it('method chain', async function () {
-    const goods = await client
+    const c = new FmClient()
+    const goods = await c
       .open(process.env.FMWW_SIGN_IN_URL)
       .signIn(user)
       .createAbility()
       .search({jan: jan})
     expect(goods.jan).to.equal(jan);
+    await c.quit()
   });
 
   it('ProductMaintenance', async function () {
-    await client
+    const ability = await client
       .open(process.env.FMWW_SIGN_IN_URL)
       .signIn(user)
-    const ability = await client.createAbility({path: ProductMaintenance.path})
+      .createAbility({path: ProductMaintenance.path})
     expect(ability).to.be.an.instanceof(ProductMaintenance);
     
     const goods = await client.search({

@@ -1,6 +1,6 @@
 const Queue = require('../collections/Queue')
-const Promiseable = require('./Promiseable')
-const Nop = require('./Nop')
+const Promiseable = require('./components/Promiseable')
+const Nop = require('./abilities/Nop')
 const ProductMaintenance = require('./abilities/external-interface/ProductMaintenance')
 const fmww = require('../../fmwwService')
 

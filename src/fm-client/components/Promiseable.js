@@ -26,6 +26,8 @@ module.exports = class Promiseable {
     return new Promise((success, failure) => {
       console.log('WebBrowser inner then')
       this.run((err, result) => {
+        console.log('callback ->>>>')
+        console.log(result)
         if (err) failure(err)
         else success(result)
       })
@@ -44,7 +46,10 @@ module.exports = class Promiseable {
 
       if(self.queue.count > 0) {
         const x = self.dequeue()
+        console.log(x.entity.toString())
         result = await x.entity.apply(x.context, x.args)
+        console.log('result ->>>>>>')
+        console.log(result)
       }
       if(self.queue.count === 0) {
         func(err, result)

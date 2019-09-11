@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const FmClient = require('../../src/fm-client/FmClient');
-const Nop = require('../../src/fm-client/Nop')
+const Nop = require('../../src/fm-client/abilities/Nop')
 const ProductMaintenance = require('../../src/fm-client/abilities/external-interface/ProductMaintenance')
 
 describe('FmClient', function () {

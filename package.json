@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/bootstrap.js --recursive test",
+    "test": "mocha test/bootstrap.js --recursive test --timeout 10000",
     "start": "node --require dotenv/config index.js"
   },
   "repository": {

@@ -3,6 +3,8 @@ const {promisify} = require('util');
 const fs = require('fs');
 const widget = require('./widget');
 const fmww = require('./fmwwService')
+const FmClient = require('./src/fm-client/FmClient');
+const ProductMaintenance = require('./src/fm-client/abilities/external-interface/ProductMaintenance')
 
 const readFileAsync = promisify(fs.readFile);
 
@@ -31,21 +33,14 @@ function red(s) {
   })(process.argv[3]).catch(_ => [])
   console.log(janCodeList)
 
-  console.log('launch')
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--window-size=500,500',
-    ]
-  });
-  const page = await fmww.newPage(browser)
-  console.log(process.env.FMWW_SIGN_IN_URL)
-  await page.goto(process.env.FMWW_SIGN_IN_URL)
-
-  await fmww.signIn(page)
-  await fmww.decideMenuItem(page)
+  const client = new FmClient()
+  await client.open(process.env.FMWW_SIGN_IN_URL)
+    .signIn({
+      FMWW_ACCESS_KEY_ID     : process.env.FMWW_ACCESS_KEY_ID,
+      FMWW_USER_NAME         : process.env.FMWW_USER_NAME,
+      FMWW_SECRET_ACCESS_KEY : process.env.FMWW_SECRET_ACCESS_KEY,
+      FMWW_PASSWORD          : process.env.FMWW_PASSWORD
+    }).createAbility({path: ProductMaintenance.path})
 
   const xs = janCodeList.length > 0 ? janCodeList : await fmww.fetchItems(page)
   const width = 30
@@ -62,11 +57,11 @@ function red(s) {
     } else {
       options.itemCode = xs[i][0]
     }
-    await fmww.downloadProductsExcel(page, options)
+    await client.search(options)
 
     widget.progress(xs.length, (i+1))
     process.stdout.write("\033[1A")
   };
 
-  await browser.close();
+  await client.quit();
 })();

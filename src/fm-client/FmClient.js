@@ -3,6 +3,7 @@ const Promiseable = require('./components/Promiseable')
 const Nop = require('./abilities/Nop')
 const ProductMaintenance = require('./abilities/external-interface/ProductMaintenance')
 const fmww = require('../../fmwwService')
+const debug = require('../diagnostics/debug')
 
 module.exports = class FmClient extends Promiseable {
   constructor() {
@@ -18,9 +19,9 @@ module.exports = class FmClient extends Promiseable {
       // 各リクエストのレスポンスを検知
       this.page.on('response', response => {
         this.responses.enqueue(response)
-        console.log(response.status(), response.url()) // 全リクエストのステータスコードとURLをlog
+        debug.log(response.status(), response.url()) // 全リクエストのステータスコードとURLをlog
         if (300 > response.status() && 200 <= response.status()) return;
-        console.warn('status error', response.status(), response.url()) // ステータスコード200番台以外をlog
+        debug.warn('status error', response.status(), response.url()) // ステータスコード200番台以外をlog
       });
     })
   }
@@ -71,7 +72,7 @@ module.exports = class FmClient extends Promiseable {
   }
 
   search(op) {
-    console.log('FmClient.search')
+    debug.log('FmClient.search')
     this.enqueue(async () => {
       return await this.ability.search(op)
     })
@@ -79,17 +80,17 @@ module.exports = class FmClient extends Promiseable {
   }
 
   create() {
-    console.log('FmClient.create')
+    debug.log('FmClient.create')
     return this
   }
 
   update() {
-    console.log('FmClient.update')
+    debug.log('FmClient.update')
     return this
   }
 
   delete() {
-    console.log('FmClient.delete')
+    debug.log('FmClient.delete')
     return this
   }
 }

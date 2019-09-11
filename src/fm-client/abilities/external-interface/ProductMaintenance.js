@@ -1,5 +1,6 @@
 const fmww = require('../../../../fmwwService')
 const PageProperty = require('../../components/PageProperty')
+const debug = require('../../../diagnostics/debug')
 
 module.exports = class ProductMaintenance extends PageProperty {
   static get path() {
@@ -11,26 +12,26 @@ module.exports = class ProductMaintenance extends PageProperty {
   }
 
   async enable() {
-    console.log('ProductMaintenance.enable')
+    debug.log('ProductMaintenance.enable')
     await fmww.decideMenuItem(this.page)
     return true
   }
 
   async search(options) {
-    console.log('ProductMaintenance.search')
+    debug.log('ProductMaintenance.search')
     await fmww.downloadProductsExcel(this.page, options)
     return {jan: options.barcode}
   }
 
   create() {
-    console.log('ProductMaintenance.create')
+    debug.log('ProductMaintenance.create')
   }
 
   update() {
-    console.log('ProductMaintenance.update')
+    debug.log('ProductMaintenance.update')
   }
 
   delete() {
-    console.log('ProductMaintenance.delete')
+    debug.log('ProductMaintenance.delete')
   }
 }

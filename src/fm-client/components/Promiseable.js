@@ -1,4 +1,5 @@
 const ActionHandler = require('./ActionHandler')
+const debug = require('../../diagnostics/debug')
 
 module.exports = class Promiseable {
   constructor(queue) {
@@ -22,12 +23,12 @@ module.exports = class Promiseable {
   }
 
   then(fulfill, reject) {
-    console.log('WebBrowser outer then')
+    debug.log('WebBrowser outer then')
     return new Promise((success, failure) => {
-      console.log('WebBrowser inner then')
+      debug.log('WebBrowser inner then')
       this.run((err, result) => {
-        console.log('callback ->>>>')
-        console.log(result)
+        debug.log('callback ->>>>')
+        debug.log(result)
         if (err) failure(err)
         else success(result)
       })
@@ -37,23 +38,23 @@ module.exports = class Promiseable {
   run(callback) {
     const self = this
     const func = callback || function() {}
-    console.log('run')
+    debug.log('run')
 
     setImmediate(async function work() {
       let err = null
       let result = null
-      console.log('work queue: ' + self.queue.count)
+      debug.log('work queue: ' + self.queue.count)
 
       if(self.queue.count > 0) {
         const x = self.dequeue()
-        console.log(x.entity.toString())
+        debug.log(x.entity.toString())
         result = await x.entity.apply(x.context, x.args)
-        console.log('result ->>>>>>')
-        console.log(result)
+        debug.log('result ->>>>>>')
+        debug.log(result)
       }
       if(self.queue.count === 0) {
         func(err, result)
-        console.log('is completed')
+        debug.log('is completed')
       } else {
         setImmediate(work)
       }

@@ -29,7 +29,10 @@ module.exports = class FmClient extends Promiseable {
   open(url) {
     this.enqueue(async () => {
       this.responses.clear()
-      await this.page.goto(url)
+      await Promise.all([
+        this.page.waitForNavigation({waitUntil: 'networkidle2'}),
+        this.page.goto(url)
+      ])
       return this.responses.dequeue()
     }, [url])
     return this

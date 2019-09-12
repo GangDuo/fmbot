@@ -34,7 +34,7 @@ function red(s) {
   console.log(janCodeList)
 
   const client = new FmClient()
-  await client.open(process.env.FMWW_SIGN_IN_URL)
+  const ability = await client.open(process.env.FMWW_SIGN_IN_URL)
     .signIn({
       FMWW_ACCESS_KEY_ID     : process.env.FMWW_ACCESS_KEY_ID,
       FMWW_USER_NAME         : process.env.FMWW_USER_NAME,
@@ -42,7 +42,7 @@ function red(s) {
       FMWW_PASSWORD          : process.env.FMWW_PASSWORD
     }).createAbility({path: ProductMaintenance.path})
 
-  const xs = janCodeList.length > 0 ? janCodeList : await fmww.fetchItems(page)
+  const xs = janCodeList.length > 0 ? janCodeList : ability.items
   const width = 30
   for (let i = 0; i < xs.length; i++) {
     const msg = '[' + (i+1) + '/' + xs.length + ']: ' + xs[i]

@@ -9,11 +9,17 @@ module.exports = class ProductMaintenance extends PageProperty {
 
   constructor(page) {
     super(page)
+    this.items_ = null
+  }
+
+  get items() {
+    return this.items_
   }
 
   async enable() {
     debug.log('ProductMaintenance.enable')
     await fmww.decideMenuItem(this.page)
+    this.items_ = await fmww.fetchItems(this.page)
     return true
   }
 

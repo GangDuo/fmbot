@@ -139,22 +139,27 @@ const signIn = async (page, user) => {
   return Promise.resolve(true)
 }
 
-const decideMenuItem = async (page) => {
+const decideMenuItem = async (page, context) => {
+  const catergory = context.catergory
+  const subcatergory = context.subcatergory
+  const command = context.command
+  const action = context.action
+
   // 外部インターフェース -> 対HT -> 商品マスタメンテナンス -> 照会
-  await page.waitForSelector('#menu\\:0 div:nth-child(14)')
-  await page.waitForSelector('#menu\\:1 div:nth-child(1)')
-  await page.evaluate(_ => {
-    document.querySelector('#menu\\:0 div:nth-child(14)').click()
-    document.querySelector('#menu\\:1 div:nth-child(1)').click()
-  }),
-  await page.waitForSelector('#menu\\:2 div:nth-child(4) div:nth-child(3)')
+  await page.waitForSelector('#menu\\:0 div:nth-child(' + catergory + ')')
+  await page.waitForSelector('#menu\\:1 div:nth-child(' + subcatergory + ')')
+  await page.evaluate((catergory, subcatergory) => {
+    document.querySelector('#menu\\:0 div:nth-child(' + catergory + ')').click()
+    document.querySelector('#menu\\:1 div:nth-child(' + subcatergory + ')').click()
+  }, catergory, subcatergory),
+  await page.waitForSelector('#menu\\:2 div:nth-child(' + command + ') div:nth-child(' + action + ')')
   console.log('menu')
   await page.screenshotIfDebug({ path: 'menu.png' });
 
   await Promise.all([
-    page.evaluate(x => {
-      document.querySelector('#menu\\:2 div:nth-child(4) div:nth-child(3)').click()
-    }),
+    page.evaluate((command, action) => {
+      document.querySelector('#menu\\:2 div:nth-child(' + command + ') div:nth-child(' + action + ')').click()
+    }, command, action),
     page.waitForNavigation({timeout: 60000, waitUntil: 'domcontentloaded'})
   ])
   await waitUntilLoadingIsOver(page)

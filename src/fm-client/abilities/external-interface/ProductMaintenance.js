@@ -1,6 +1,7 @@
 const fmww = require('../../../../fmwwService')
 const PageProperty = require('../../components/PageProperty')
 const debug = require('../../../diagnostics/debug')
+const MenuContext = require('../../components/MenuContext')
 
 module.exports = class ProductMaintenance extends PageProperty {
   static get path() {
@@ -18,7 +19,7 @@ module.exports = class ProductMaintenance extends PageProperty {
 
   async enable() {
     debug.log('ProductMaintenance.enable')
-    await fmww.decideMenuItem(this.page)
+    await fmww.decideMenuItem(this.page, new MenuContext(14, 1, 4, 3))
     this.items_ = await fmww.fetchItems(this.page)
     return true
   }

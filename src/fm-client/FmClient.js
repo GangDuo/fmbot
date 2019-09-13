@@ -4,6 +4,7 @@ const Nop = require('./abilities/Nop')
 const ProductMaintenance = require('./abilities/external-interface/ProductMaintenance')
 const fmww = require('../../fmwwService')
 const debug = require('../diagnostics/debug')
+const Supplier = require('./abilities/master/Supplier')
 
 module.exports = class FmClient extends Promiseable {
   constructor() {
@@ -61,6 +62,10 @@ module.exports = class FmClient extends Promiseable {
         case ProductMaintenance.path: {
             this.ability = new ProductMaintenance(this.page)
           break;
+        }
+        case Supplier.path: {
+          this.ability = new Supplier(this.page)
+          break
         }
   
         default: {

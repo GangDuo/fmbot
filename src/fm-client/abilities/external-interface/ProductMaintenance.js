@@ -1,9 +1,9 @@
 const fmww = require('../../../../fmwwService')
-const PageProperty = require('../../components/PageProperty')
+const AbstractSinglePage = require('../../components/AbstractSinglePage')
 const debug = require('../../../diagnostics/debug')
 const MenuContext = require('../../components/MenuContext')
 
-module.exports = class ProductMaintenance extends PageProperty {
+module.exports = class ProductMaintenance extends AbstractSinglePage {
   static get path() {
     return '/外部インターフェース:対HT/商品マスタメンテナンス/'
   }

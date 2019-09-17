@@ -1,6 +1,7 @@
+const AbstractSinglePage = require('../components/AbstractSinglePage')
 const debug = require('../../diagnostics/debug')
 
-module.exports = class Nop {
+module.exports = class Nop extends AbstractSinglePage {
   enable() {
     return new Promise(function(success, failure) {
       debug.log('Nop.enable')

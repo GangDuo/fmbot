@@ -87,8 +87,11 @@ module.exports = class FmClient extends Promiseable {
     return this
   }
 
-  create() {
+  create(op) {
     debug.log('FmClient.create')
+    this.enqueue(async () => {
+      return await this.ability.create(op)
+    })
     return this
   }
 
@@ -100,8 +103,11 @@ module.exports = class FmClient extends Promiseable {
     return this
   }
 
-  delete() {
+  delete(op) {
     debug.log('FmClient.delete')
+    this.enqueue(async () => {
+      return await this.ability.delete(op)
+    })
     return this
   }
 }

@@ -147,7 +147,6 @@ const decideMenuItem = async (page, context) => {
 
   // 外部インターフェース -> 対HT -> 商品マスタメンテナンス -> 照会
   await page.waitForSelector('#menu\\:0 div:nth-child(' + catergory + ')')
-  await page.waitForSelector('#menu\\:1 div:nth-child(' + subcatergory + ')')
   await page.evaluate((catergory, subcatergory) => {
     document.querySelector('#menu\\:0 div:nth-child(' + catergory + ')').click()
     document.querySelector('#menu\\:1 div:nth-child(' + subcatergory + ')').click()

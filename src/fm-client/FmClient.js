@@ -92,8 +92,11 @@ module.exports = class FmClient extends Promiseable {
     return this
   }
 
-  update() {
+  update(op) {
     debug.log('FmClient.update')
+    this.enqueue(async () => {
+      return await this.ability.update(op)
+    })
     return this
   }
 

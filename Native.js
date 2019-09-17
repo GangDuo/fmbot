@@ -7,6 +7,10 @@ module.exports = class Native {
     document.getElementById('excel_button_ex').click()
   }
 
+  static clickQuitButton() {
+    document.getElementById('quit_button').click()
+  }
+
   static signIn(arg) {
     document.getElementById('form1:client').value = arg.FMWW_ACCESS_KEY_ID
     document.getElementById('form1:person').value = arg.FMWW_USER_NAME

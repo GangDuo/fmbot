@@ -166,9 +166,49 @@ const decideMenuItem = async (page, context) => {
   await page.screenshotIfDebug({ path: 'criteria.png' });
 }
 
+const updateSupplier = async (page, options) => {
+  if(!options.id) {
+    throw new Error('')
+  }
+  await page.evaluate(x => {
+    ['sup_cd_from', 'sup_cd_to'].forEach((id) => {
+      document.getElementById(id).value = x
+    })
+  }, options.id)
+  await page.evaluate(Native.clickSearchButton)
+  await waitUntilLoadingIsOver(page)
+  // 仕入先一覧の先頭行をクリック
+  await page.evaluate(_ => document.querySelector('table.body_table tr:nth-child(2) td').click())
+  await waitUntilLoadingIsOver(page)
+  // 編集
+  await page.evaluate(supplierName => {
+    if(supplierName) {
+      document.getElementById('sup_nm').value = supplierName  // 名称
+    }
+  }, options.supplierName)
+  // 保存
+  await page.evaluate(supplierName => {
+    // 確認ダイアログ無効
+    window.confirm = () => { return true }
+    document.getElementById('register_button').click()
+  })
+  await waitUntilLoadingIsOver(page)
+  const result = await page.evaluate(_ => document.getElementById('form1:errorMessage').textContent)
+  // 仕入先一覧ページへ戻る
+  await page.evaluate(Native.clickQuitButton)
+  await waitUntilLoadingIsOver(page)
+  // 仕入先検索ページへ戻る
+  await page.evaluate(Native.clickQuitButton)
+  await waitUntilLoadingIsOver(page)
+  return {
+    message: result
+  }
+}
+
 exports.createBrowserInstance = createBrowserInstance
 exports.newPage = newPage
 exports.fetchItems = fetchItems
 exports.downloadProductsExcel = downloadProductsExcel
 exports.signIn = signIn
 exports.decideMenuItem = decideMenuItem
+exports.updateSupplier = updateSupplier

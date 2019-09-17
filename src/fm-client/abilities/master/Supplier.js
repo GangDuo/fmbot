@@ -19,6 +19,7 @@ module.exports = class Supplier extends PageProperty {
   }
 
   /**
+   * id:
    * supplierName:
    * officialName:
    */
@@ -30,8 +31,9 @@ module.exports = class Supplier extends PageProperty {
     debug.log('Supplier.create')
   }
 
-  update() {
+  async update(options) {
     debug.log('Supplier.update')
+    return await fmww.updateSupplier(this.page, options)
   }
 
   delete() {

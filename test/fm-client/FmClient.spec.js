@@ -71,11 +71,19 @@ describe('FmClient', function () {
   });
 
   it('Supplier', async function () {
-    const ability = await client
+    const c = new FmClient()
+    const ability = await c
       .open(process.env.FMWW_SIGN_IN_URL)
       .signIn(user)
       .createAbility({path: Supplier.path})
-    expect(ability).to.be.an.instanceof(Supplier);    
+    expect(ability).to.be.an.instanceof(Supplier);
+
+    const res = await c.update({
+      id: '9999A',
+      supplierName: 'ﾃｽﾄ（株）'
+    })
+    expect(res.message).to.equal('仕入先を更新しました');
+    await c.quit()
   });
 
 });

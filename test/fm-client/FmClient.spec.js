@@ -59,7 +59,7 @@ describe('FmClient', function () {
     const ability = await client
       .open(process.env.FMWW_SIGN_IN_URL)
       .signIn(user)
-      .createAbility({path: ProductMaintenance.path})
+      .createAbility(ProductMaintenance)
     expect(ability).to.be.an.instanceof(ProductMaintenance);
     
     const goods = await client.search({
@@ -75,7 +75,7 @@ describe('FmClient', function () {
     const ability = await c
       .open(process.env.FMWW_SIGN_IN_URL)
       .signIn(user)
-      .createAbility({path: Supplier.path})
+      .createAbility(Supplier)
     expect(ability).to.be.an.instanceof(Supplier);
 
     const res = await c.update({

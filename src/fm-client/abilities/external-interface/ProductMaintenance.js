@@ -3,11 +3,10 @@ const AbstractSinglePage = require('../../components/AbstractSinglePage')
 const debug = require('../../../diagnostics/debug')
 const MenuContext = require('../../components/MenuContext')
 
+/*
+ * /外部インターフェース:対HT/商品マスタメンテナンス/ 
+ */
 module.exports = class ProductMaintenance extends AbstractSinglePage {
-  static get path() {
-    return '/外部インターフェース:対HT/商品マスタメンテナンス/'
-  }
-
   constructor(page) {
     super(page)
     this.items_ = null

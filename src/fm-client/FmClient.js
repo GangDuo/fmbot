@@ -54,25 +54,11 @@ module.exports = class FmClient extends Promiseable {
     return this
   }
 
-  createAbility(options = {}) {
-    const path = options.path || 0
+  createAbility(abilityClass) {
+    const AbilityClass = abilityClass || Nop
 
     this.enqueue(async () => {
-      switch(path) {
-        case ProductMaintenance.path: {
-            this.ability = new ProductMaintenance(this.page)
-          break;
-        }
-        case Supplier.path: {
-          this.ability = new Supplier(this.page)
-          break
-        }
-  
-        default: {
-          this.ability = new Nop()
-          break;
-        }
-      }
+      this.ability = new AbilityClass(this.page)
       await this.ability.enable()
       return this.ability
     })

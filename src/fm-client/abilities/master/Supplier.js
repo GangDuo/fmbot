@@ -3,11 +3,10 @@ const AbstractSinglePage = require('../../components/AbstractSinglePage')
 const debug = require('../../../diagnostics/debug')
 const MenuContext = require('../../components/MenuContext')
 
+/*
+ * /マスター:各種マスター/仕入先マスター/
+ */
 module.exports = class Supplier extends AbstractSinglePage {
-  static get path() {
-    return '/マスター:各種マスター/仕入先マスター/'
-  }
-
   constructor(page) {
     super(page)
   }

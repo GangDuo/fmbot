@@ -3,6 +3,7 @@ const FmClient = require('../../src/fm-client/FmClient');
 const Nop = require('../../src/fm-client/abilities/Nop')
 const ProductMaintenance = require('../../src/fm-client/abilities/external-interface/ProductMaintenance')
 const Supplier = require('../../src/fm-client/abilities/master/Supplier')
+const MovementExport = require('../../src/fm-client/abilities/movement/MovementExport')
 
 describe('FmClient', function () {
   let client = null
@@ -83,6 +84,19 @@ describe('FmClient', function () {
       supplierName: 'ﾃｽﾄ（株）'
     })
     expect(res.message).to.equal('仕入先を更新しました');
+    await c.quit()
+  });
+
+  it('MovementExport', async function () {
+    const c = new FmClient()
+    const ability = await c
+      .open(process.env.FMWW_SIGN_IN_URL)
+      .signIn(user)
+      .createAbility(MovementExport)
+    expect(ability).to.be.an.instanceof(MovementExport);
+
+    const res = await c.search()
+    expect(res).to.have.lengthOf(1)
     await c.quit()
   });
 

@@ -40,7 +40,7 @@ function red(s) {
       FMWW_USER_NAME         : process.env.FMWW_USER_NAME,
       FMWW_SECRET_ACCESS_KEY : process.env.FMWW_SECRET_ACCESS_KEY,
       FMWW_PASSWORD          : process.env.FMWW_PASSWORD
-    }).createAbility({path: ProductMaintenance.path})
+    }).createAbility(ProductMaintenance)
 
   const xs = janCodeList.length > 0 ? janCodeList : ability.items
   const width = 30

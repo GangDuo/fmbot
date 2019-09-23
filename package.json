@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/GangDuo/fmbot#readme",
   "dependencies": {
+    "commander": "^3.0.1",
     "dotenv": "^8.0.0",
     "puppeteer": "^1.19.0"
   },

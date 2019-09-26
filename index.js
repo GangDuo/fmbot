@@ -1,3 +1,4 @@
+const program = require('commander')
 const puppeteer = require('puppeteer');
 const {promisify} = require('util');
 const fs = require('fs');
@@ -12,25 +13,42 @@ function red(s) {
   return '\u001b[31m' + s + '\u001b[0m'
 }
 
-(async () => {
+(() => {
   // コマンドライン引数
   for (let i = 0; i < process.argv.length; i++) {
     console.log("argv[" + i + "] = " + process.argv[i]);
   }
 
-  if(process.argv.length < 3) {
+  program
+  .version('0.0.1')
+  .arguments('[others...]')
+  .option('-t, --temp-dir <path>', '商品マスタをダウンロードする一時ディレクトリ', '')
+  .action(onStart)
+  .parse(process.argv)
+})();
+
+async function onStart(others, options) {
+  console.log(others)
+  if(options.tempDir.length === 0){
     process.stderr.write('\u001b[47m' + red('コマンドライン引数不足。保存ディレクトリを指定してください。') + '\u001b[0m')
     return
   }
 
   // 商品マスタをダウンロードする一時ディレクトリ
-  const temp = process.argv[2]
+  const temp = options.tempDir
 
   // 指定したjanのみを抽出する場合
-  const janCodeList = await (async (file) => {
-    const buf = await readFileAsync(file)
-    return buf.toString().split(/\r\n/).filter(a => a.length > 0)
-  })(process.argv[3]).catch(_ => [])
+  const janCodeList = await (async (files) => {
+    let xs = []
+    for (let i = 0; i < files.length; i++) {
+      const path = files[i];
+      xs = xs.concat(await (async (file) => {
+        const buf = await readFileAsync(file)
+        return buf.toString().split(/\r\n/).filter(a => a.length > 0)
+      })(path).catch(_ => []))
+    }
+    return xs
+  })(others)
   console.log(janCodeList)
 
   const client = new FmClient()
@@ -40,7 +58,7 @@ function red(s) {
       FMWW_USER_NAME         : process.env.FMWW_USER_NAME,
       FMWW_SECRET_ACCESS_KEY : process.env.FMWW_SECRET_ACCESS_KEY,
       FMWW_PASSWORD          : process.env.FMWW_PASSWORD
-    }).createAbility({path: ProductMaintenance.path})
+    }).createAbility(ProductMaintenance)
 
   const xs = janCodeList.length > 0 ? janCodeList : ability.items
   const width = 30
@@ -64,4 +82,4 @@ function red(s) {
   };
 
   await client.quit();
-})();
+}

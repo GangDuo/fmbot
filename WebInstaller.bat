@@ -1,5 +1,6 @@
 @set @temp=0/*
 @echo off
+pushd "%~dp0"
 
 cscript.exe //e:jscript //nologo "%~f0" %*
 

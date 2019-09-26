@@ -3,6 +3,7 @@ const path = require('path');
 const {promisify} = require('util');
 const fs = require('fs');
 var Native = require('./Native');
+const debug = require('./src/diagnostics/debug')
 
 const writeFileAsync = promisify(fs.writeFile);
 
@@ -134,7 +135,7 @@ const signIn = async (page, user) => {
          FMWW_PASSWORD          : process.env.FMWW_PASSWORD }),
     page.waitForNavigation({timeout: 60000, waitUntil: 'domcontentloaded'})
   ])
-  console.log('signined')
+  debug.log('signined')
   await page.screenshotIfDebug({ path: 'signined.png' });
   return Promise.resolve(true)
 }
@@ -152,7 +153,7 @@ const decideMenuItem = async (page, context) => {
     document.querySelector('#menu\\:1 div:nth-child(' + subcatergory + ')').click()
   }, catergory, subcatergory),
   await page.waitForSelector('#menu\\:2 div:nth-child(' + command + ') div:nth-child(' + action + ')')
-  console.log('menu')
+  debug.log('menu')
   await page.screenshotIfDebug({ path: 'menu.png' });
 
   await Promise.all([
@@ -162,7 +163,7 @@ const decideMenuItem = async (page, context) => {
     page.waitForNavigation({timeout: 60000, waitUntil: 'domcontentloaded'})
   ])
   await waitUntilLoadingIsOver(page)
-  console.log('criteria')
+  debug.log('criteria')
   await page.screenshotIfDebug({ path: 'criteria.png' });
 }
 

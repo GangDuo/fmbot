@@ -101,14 +101,51 @@ describe('FmClient', function () {
     await c.quit()
   });
 
-  it('Promotion', async function () {
-    const c = new FmClient()
-    const ability = await c
-      .open(process.env.FMWW_SIGN_IN_URL)
-      .signIn(user)
-      .createAbility(Promotion)
-    expect(ability).to.be.an.instanceof(Promotion);
-    await c.quit()
-  });
+  describe('Promotion', function () {
+    it('search', async function () {
+      const c = new FmClient()
+      const ability = await c
+        .open(process.env.FMWW_SIGN_IN_URL)
+        .signIn(user)
+        .createAbility(Promotion)
+      expect(ability).to.be.an.instanceof(Promotion);
+      const response = await c.search()
+      expect(response).be.true
+      await c.quit()
+    });
+    it('create', async function () {
+      const c = new FmClient()
+      const ability = await c
+        .open(process.env.FMWW_SIGN_IN_URL)
+        .signIn(user)
+        .createAbility(Promotion)
+      expect(ability).to.be.an.instanceof(Promotion);
+      const response = await c.create()
+      expect(response).be.true
+      await c.quit()
+    });
+    it('update', async function () {
+      const c = new FmClient()
+      const ability = await c
+        .open(process.env.FMWW_SIGN_IN_URL)
+        .signIn(user)
+        .createAbility(Promotion)
+      expect(ability).to.be.an.instanceof(Promotion);
+      const response = await c.update()
+      expect(response).be.true
+      await c.quit()
+    });
+    it('delete', async function () {
+      const c = new FmClient()
+      const ability = await c
+        .open(process.env.FMWW_SIGN_IN_URL)
+        .signIn(user)
+        .createAbility(Promotion)
+      expect(ability).to.be.an.instanceof(Promotion);
+      const response = await c.delete()
+      expect(response).be.true
+      await c.quit()
+    });
+  })
 
 });

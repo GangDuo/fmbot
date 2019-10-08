@@ -4,6 +4,7 @@ const Nop = require('../../src/fm-client/abilities/Nop')
 const ProductMaintenance = require('../../src/fm-client/abilities/external-interface/ProductMaintenance')
 const Supplier = require('../../src/fm-client/abilities/master/Supplier')
 const MovementExport = require('../../src/fm-client/abilities/movement/MovementExport')
+const Promotion = require('../../src/fm-client/abilities/for-shop/customers/Promotion')
 
 describe('FmClient', function () {
   let client = null
@@ -97,6 +98,16 @@ describe('FmClient', function () {
 
     const res = await c.search()
     expect(res).to.have.lengthOf(1)
+    await c.quit()
+  });
+
+  it('Promotion', async function () {
+    const c = new FmClient()
+    const ability = await c
+      .open(process.env.FMWW_SIGN_IN_URL)
+      .signIn(user)
+      .createAbility(Promotion)
+    expect(ability).to.be.an.instanceof(Promotion);
     await c.quit()
   });
 

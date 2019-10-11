@@ -5,6 +5,7 @@ const ProductMaintenance = require('../../src/fm-client/abilities/external-inter
 const Supplier = require('../../src/fm-client/abilities/master/Supplier')
 const MovementExport = require('../../src/fm-client/abilities/movement/MovementExport')
 const Promotion = require('../../src/fm-client/abilities/for-shop/customers/Promotion')
+const Between = require('../../src/fm-client/components/Between')
 
 describe('FmClient', function () {
   let client = null
@@ -103,14 +104,20 @@ describe('FmClient', function () {
 
   describe('Promotion', function () {
     it('search', async function () {
+      const pairs = [
+        [3, new Between('2019-10-01', '2019-10-10')],
+        [0, new Between('2019-09-30', '2019-09-30')]
+      ]
       const c = new FmClient()
       const ability = await c
         .open(process.env.FMWW_SIGN_IN_URL)
         .signIn(user)
         .createAbility(Promotion)
       expect(ability).to.be.an.instanceof(Promotion);
-      const response = await c.search()
-      expect(response).be.true
+      for(pair of pairs) {
+        const response = await c.search(pair[1])
+        expect(response).to.have.lengthOf(pair[0])
+      }
       await c.quit()
     });
     it('create', async function () {

@@ -22,25 +22,34 @@ module.exports = class Promotion extends AbstractSinglePage {
 
   async search(options) {
     await this.clickOnMenu_(INDEX_BUTTON)
-    return true
+    const xs = await fmww.promotions(this.page, options)
+    await this.backToMainMenu_()
+    return xs
   }
 
   async create() {
     await this.clickOnMenu_(CREATE_BUTTON)
+    await this.backToMainMenu_()
     return true
   }
 
   async update() {
     await this.clickOnMenu_(EDIT_BUTTON)
+    await this.backToMainMenu_()
     return true
   }
 
   async delete() {
     await this.clickOnMenu_(EDIT_BUTTON)
+    await this.backToMainMenu_()
     return true
   }
 
   async clickOnMenu_(button) {
     await fmww.decideMenuItem(this.page, new MenuContext(7, 2, 4, button))
+  }
+
+  async backToMainMenu_() {
+    await fmww.back(this.page)
   }
 }

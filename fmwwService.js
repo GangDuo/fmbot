@@ -19,6 +19,13 @@ const waitUntilLoadingIsOver = async (page) => {
   await page.waitFor(() => document.querySelector('#loading').style.display === 'none', disableTimeout)
 }
 
+const back = async (page) => {
+  await Promise.all([
+    page.evaluate(Native.clickQuitButton),
+    page.waitForNavigation({timeout: 60000, waitUntil: 'domcontentloaded'})
+  ])
+}
+
 function debugOf(page) {
   const isDebug = false
   page.screenshotIfDebug = isDebug ? page.screenshot : () => { return Promise.resolve() }
@@ -206,6 +213,65 @@ const updateSupplier = async (page, options) => {
   }
 }
 
+const promotions = async (page, between) => {
+  await page.evaluate((from, to) => {
+    // 設定日付
+    document.getElementById('date_from').value = from
+    document.getElementById('date_to').value = to
+    document.getElementById('search_button').click()
+  }, between.from, between.to)
+  await waitUntilLoadingIsOver(page)
+
+  // 設定番号すべてを取得
+  const settingNumbers = await page.evaluate(_ => {
+    // テーブルに表示するデータソース、[row][clm]の2次元配列
+    const rows = document.getElementById('list').native
+    return (rows.length === 0) ? [] : rows.map(row => row[0].value)
+  })
+  await page.evaluate(Native.clickQuitButton)
+  await waitUntilLoadingIsOver(page)
+
+  let settings = []
+  // 1行づつ詳細ページを開き設定情報を取得する
+  for (const settingNumber of settingNumbers) {
+    await page.evaluate((settingNumber) => {
+      document.getElementById('number').value = settingNumber
+      document.getElementById('search_button').click()
+    }, settingNumber, {timeout: 0})
+    await waitUntilLoadingIsOver(page)
+
+    await page.evaluate(_ => {
+      const table = document.querySelector("#list div.body_div table")
+      // 先頭行クリックして詳細を表示
+      table.rows[1].cells[0].click()
+    })
+    await waitUntilLoadingIsOver(page)
+
+    // 設定情報を取得
+    const info = await page.evaluate((settingNumber) => {
+      return {
+        settingNumber: settingNumber,
+        priority: document.getElementById('setSeq').value,
+        between: {
+          from: document.getElementById('dateFrom').value,
+          to: document.getElementById('dateTo').value
+        },
+        selected: Array.from(document.querySelectorAll("#dest\\:SELECT span[selected=selected]")).map(x => x.textContent),
+        unit: document.getElementById('input_7:0').value, // 単位（円）
+        rate: document.getElementById('input_8:0').value, // レート
+      }
+    }, settingNumber)
+    settings.push(info)
+
+    // 一覧画面に戻る
+    await back(page)
+    // 検索条件入力画面に戻る
+    await back(page)
+  }
+  return settings
+}
+
+exports.back = back
 exports.createBrowserInstance = createBrowserInstance
 exports.newPage = newPage
 exports.fetchItems = fetchItems
@@ -213,3 +279,4 @@ exports.downloadProductsExcel = downloadProductsExcel
 exports.signIn = signIn
 exports.decideMenuItem = decideMenuItem
 exports.updateSupplier = updateSupplier
+exports.promotions = promotions

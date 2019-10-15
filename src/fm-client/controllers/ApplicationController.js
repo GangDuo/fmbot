@@ -46,11 +46,12 @@ module.exports = class ApplicationController {
       view.render()
     })
     .on('ProgressChanged', state => {
-      view.progressBar.value = state.percentage
+      view.progressBar.performStep()
       view.label = view.progressBar.value === view.progressBar.maximum ? '' : buildLabel(view.progressBar.value, view.progressBar.maximum, state.statusText)
       view.render()  
     })
     view.label = 'ログインしています。'
+    view.progressBar.step = 1
     view.render()
     await downloader.download(options.tempDir, janCodeList)  
   }

@@ -5,6 +5,11 @@ const ApplicationView = require('../views/ApplicationView');
 const EventEmitter = require('events').EventEmitter;
 const FmClient = require('../FmClient');
 const ProductMaintenance = require('../abilities/external-interface/ProductMaintenance')
+const os = require('os');
+const path = require('path');
+const moment = require('moment');
+
+const mkdirAsync = promisify(fs.mkdir);
 
 function red(s) {
   return '\u001b[31m' + s + '\u001b[0m'
@@ -12,9 +17,11 @@ function red(s) {
 
 module.exports = class ApplicationController {
   static async onStart(others, options) {
-    if(options.tempDir.length === 0){
-      process.stderr.write('\u001b[47m' + red('コマンドライン引数不足。保存ディレクトリを指定してください。') + '\u001b[0m')
-      return
+    const prefix = '.fmbot_'
+    const workDir = options.tempDir || path.join(os.tmpdir(), prefix + moment().format('YYYYMMDD_HHmmss'))
+    if(options.tempDir.length === 0) {
+      await mkdirAsync(workDir)
+      process.stderr.write('\u001b[47m' + red('コマンドライン引数で保存先を指定しなかったので、一時保存ディレクトリを作成しました。\n' + workDir + '\n') + '\u001b[0m')
     }
   
     // 指定したjanのみを抽出する場合
@@ -53,7 +60,7 @@ module.exports = class ApplicationController {
     view.label = 'ログインしています。'
     view.progressBar.step = 1
     view.render()
-    await downloader.download(options.tempDir, janCodeList)  
+    await downloader.download(workDir, janCodeList)
   }
 }
 

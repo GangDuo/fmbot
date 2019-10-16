@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test/bootstrap.js --recursive test --timeout 10000",
-    "start": "node --require dotenv/config index.js"
+    "start": "node --require dotenv/config goods.js",
+    "goods": "node --require dotenv/config goods.js"
   },
   "repository": {
     "type": "git",

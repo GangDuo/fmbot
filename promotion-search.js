@@ -6,5 +6,5 @@ program
 .option('-b, --begin-date <date>', '設定日付 自', moment().format('YYYY-MM-DD'))
 .option('-e, --end-date <date>', '設定日付 至', moment().format('YYYY-MM-DD'))
 .option('-n, --setting-number <value>', '設定番号', '')
-.action(PromotionController.onStart)
+.action(PromotionController.search)
 .parse(process.argv)

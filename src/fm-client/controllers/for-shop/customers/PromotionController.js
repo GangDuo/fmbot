@@ -20,4 +20,11 @@ module.exports = class PromotionController {
 
     process.stdout.write(JSON.stringify(response, null, 2))
   }
+
+  static create(options) {
+    console.log(options.beginDate)
+    console.log(options.endDate)
+    console.log(options.storeCodes)
+    console.log(options.rate)
+  }
 }

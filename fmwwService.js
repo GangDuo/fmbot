@@ -271,6 +271,60 @@ const promotions = async (page, between) => {
   return settings
 }
 
+const createPromotion = async (page, options) => {
+  await page.evaluate((from, to, rate, targets = []) => {
+    // 設定日付
+    document.getElementById('dateFrom').value = from
+    document.getElementById('dateTo').value = to
+    // 対象店舗を選択
+    for(const element of Array.from(document.querySelectorAll('#dest\\:SELECT span'))) {
+      if(targets.includes(element.value)) {
+        element.setAttribute('selected', 'selected')
+        element.className = "selected";
+      }
+    }
+    // 対象店舗をDBに登録するため、hiddenに値を保存
+    document.getElementById('dest').value = Array.from(document.querySelectorAll('#dest\\:SELECT span'))
+      .filter(x => x.getAttribute('selected') === 'selected')
+      .map(x => x.value)
+      .join('\t')
+
+    // 倍率
+    typeInPointInfo(rate)
+
+    /*
+     * ポイントn倍設定
+     * 新規登録時に優先度をnに設定する。
+     * 編集時に優先度を変更しない。
+     */
+    function typeInPointInfo(n) {
+      if(n < 1) {
+        return;
+      }
+      document.getElementById('input_2:0').value = 1;
+      document.getElementById('input_5:0').value = 1;
+      document.getElementById('input_6:0').value = 1;
+      document.getElementById('input_7:0').value = 100;
+      document.getElementById('input_8:0').value = n;
+      if(document.querySelector('#title span').textContent === 'ポイント設定') {
+        document.getElementById('setSeq').value = n;
+      }
+    }
+  },
+  options.between.from,
+  options.between.to,
+  options.rate,
+  options.targets)
+
+  await page.evaluate(Native.disableConfirmationDialog)
+  await page.evaluate(_ => {
+    document.getElementById('dateFrom').onblur()
+    document.getElementById('dateTo').onblur()
+  })
+  await page.evaluate(Native.clickRegisterButton)
+  await waitUntilLoadingIsOver(page)
+}
+
 exports.back = back
 exports.createBrowserInstance = createBrowserInstance
 exports.newPage = newPage
@@ -280,3 +334,4 @@ exports.signIn = signIn
 exports.decideMenuItem = decideMenuItem
 exports.updateSupplier = updateSupplier
 exports.promotions = promotions
+exports.createPromotion = createPromotion

@@ -27,9 +27,9 @@ module.exports = class Promotion extends AbstractSinglePage {
     return xs
   }
 
-  async create() {
+  async create(options) {
     await this.clickOnMenu_(CREATE_BUTTON)
-    await this.backToMainMenu_()
+    await fmww.createPromotion(this.page, options)
     return true
   }
 

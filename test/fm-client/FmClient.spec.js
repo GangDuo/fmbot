@@ -127,7 +127,11 @@ describe('FmClient', function () {
         .signIn(user)
         .createAbility(Promotion)
       expect(ability).to.be.an.instanceof(Promotion);
-      const response = await c.create()
+      const response = await c.create({
+        between: new Between('1970-01-01', '1970-01-03'),
+        rate: 10,
+        targets: ['001', '009', '016']
+      })
       expect(response).be.true
       await c.quit()
     });

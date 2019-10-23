@@ -2,7 +2,8 @@ const puppeteer = require('puppeteer');
 const path = require('path');
 const {promisify} = require('util');
 const fs = require('fs');
-var Native = require('./Native');
+const Native = require('./Native');
+const ButtonSymbol = require('./ButtonSymbol');
 const debug = require('../../diagnostics/debug')
 
 const writeFileAsync = promisify(fs.writeFile);
@@ -21,7 +22,7 @@ const waitUntilLoadingIsOver = async (page) => {
 
 const back = async (page) => {
   await Promise.all([
-    page.evaluate(Native.clickQuitButton),
+    page.evaluate(Native.performClick(), ButtonSymbol.QUIT),
     page.waitForNavigation({timeout: 60000, waitUntil: 'domcontentloaded'})
   ])
 }
@@ -116,7 +117,7 @@ const downloadProductsExcel = async (page, options) => {
 
   await page.evaluate(x => document.getElementById('item_list').value = x, itemCode)
   await page.evaluate(x => document.getElementById('barcode').value = x, barcode)
-  await page.evaluate(Native.clickExcelButton)
+  await page.evaluate(Native.performClick(), ButtonSymbol.EXCEL)
   await waitUntilLoadingIsOver(page)
   await page.screenshotIfDebug({ path: 'is_ready_to_download_' + filename + '.png' });
 
@@ -183,7 +184,7 @@ const updateSupplier = async (page, options) => {
       document.getElementById(id).value = x
     })
   }, options.id)
-  await page.evaluate(Native.clickSearchButton)
+  await page.evaluate(Native.performClick(), ButtonSymbol.SEARCH)
   await waitUntilLoadingIsOver(page)
   // 仕入先一覧の先頭行をクリック
   await page.evaluate(_ => document.querySelector('table.body_table tr:nth-child(2) td').click())
@@ -203,10 +204,10 @@ const updateSupplier = async (page, options) => {
   await waitUntilLoadingIsOver(page)
   const result = await page.evaluate(_ => document.getElementById('form1:errorMessage').textContent)
   // 仕入先一覧ページへ戻る
-  await page.evaluate(Native.clickQuitButton)
+  await page.evaluate(Native.performClick(), ButtonSymbol.QUIT)
   await waitUntilLoadingIsOver(page)
   // 仕入先検索ページへ戻る
-  await page.evaluate(Native.clickQuitButton)
+  await page.evaluate(Native.performClick(), ButtonSymbol.QUIT)
   await waitUntilLoadingIsOver(page)
   return {
     message: result
@@ -228,7 +229,7 @@ const promotions = async (page, between) => {
     const rows = document.getElementById('list').native
     return (rows.length === 0) ? [] : rows.map(row => row[0].value)
   })
-  await page.evaluate(Native.clickQuitButton)
+  await page.evaluate(Native.performClick(), ButtonSymbol.QUIT)
   await waitUntilLoadingIsOver(page)
 
   let settings = []
@@ -321,7 +322,7 @@ const createPromotion = async (page, options) => {
     document.getElementById('dateFrom').onblur()
     document.getElementById('dateTo').onblur()
   })
-  await page.evaluate(Native.clickRegisterButton)
+  await page.evaluate(Native.performClick(), ButtonSymbol.REGISTER)
   await waitUntilLoadingIsOver(page)
 }
 

@@ -3,7 +3,7 @@ const path = require('path');
 const {promisify} = require('util');
 const fs = require('fs');
 var Native = require('./Native');
-const debug = require('./src/diagnostics/debug')
+const debug = require('../../diagnostics/debug')
 
 const writeFileAsync = promisify(fs.writeFile);
 

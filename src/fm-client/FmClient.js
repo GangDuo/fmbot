@@ -2,7 +2,7 @@ const Queue = require('../collections/Queue')
 const Promiseable = require('./components/Promiseable')
 const Nop = require('./abilities/Nop')
 const ProductMaintenance = require('./abilities/external-interface/ProductMaintenance')
-const fmww = require('../../fmwwService')
+const fmww = require('./core/fmwwService')
 const debug = require('../diagnostics/debug')
 const Supplier = require('./abilities/master/Supplier')
 

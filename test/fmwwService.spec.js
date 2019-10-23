@@ -1,6 +1,6 @@
 const assert = require('assert');
 const chai = require('chai');
-const fmww = require('../fmwwService')
+const fmww = require('../src/fm-client/core/fmwwService')
 
 describe("fmwwService", function() {
   let browser = null

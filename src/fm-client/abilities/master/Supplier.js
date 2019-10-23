@@ -1,4 +1,4 @@
-const fmww = require('../../../../fmwwService')
+const fmww = require('../../core/fmwwService')
 const AbstractSinglePage = require('../../components/AbstractSinglePage')
 const debug = require('../../../diagnostics/debug')
 const MenuContext = require('../../components/MenuContext')

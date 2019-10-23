@@ -1,6 +1,6 @@
 const debug = require('../../../../diagnostics/debug')
 const AbstractSinglePage = require('../../../components/AbstractSinglePage')
-const fmww = require('../../../../../fmwwService')
+const fmww = require('../../../core/fmwwService')
 const MenuContext = require('../../../components/MenuContext')
 
 const CREATE_BUTTON = 2
@@ -27,9 +27,9 @@ module.exports = class Promotion extends AbstractSinglePage {
     return xs
   }
 
-  async create() {
+  async create(options) {
     await this.clickOnMenu_(CREATE_BUTTON)
-    await this.backToMainMenu_()
+    await fmww.createPromotion(this.page, options)
     return true
   }
 

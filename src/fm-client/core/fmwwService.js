@@ -2,8 +2,9 @@ const puppeteer = require('puppeteer');
 const path = require('path');
 const {promisify} = require('util');
 const fs = require('fs');
-var Native = require('./Native');
-const debug = require('./src/diagnostics/debug')
+const Native = require('./Native');
+const ButtonSymbol = require('./ButtonSymbol');
+const debug = require('../../diagnostics/debug')
 
 const writeFileAsync = promisify(fs.writeFile);
 
@@ -21,7 +22,7 @@ const waitUntilLoadingIsOver = async (page) => {
 
 const back = async (page) => {
   await Promise.all([
-    page.evaluate(Native.clickQuitButton),
+    page.evaluate(Native.performClick(), ButtonSymbol.QUIT),
     page.waitForNavigation({timeout: 60000, waitUntil: 'domcontentloaded'})
   ])
 }
@@ -116,7 +117,7 @@ const downloadProductsExcel = async (page, options) => {
 
   await page.evaluate(x => document.getElementById('item_list').value = x, itemCode)
   await page.evaluate(x => document.getElementById('barcode').value = x, barcode)
-  await page.evaluate(Native.clickExcelButton)
+  await page.evaluate(Native.performClick(), ButtonSymbol.EXCEL)
   await waitUntilLoadingIsOver(page)
   await page.screenshotIfDebug({ path: 'is_ready_to_download_' + filename + '.png' });
 
@@ -183,7 +184,7 @@ const updateSupplier = async (page, options) => {
       document.getElementById(id).value = x
     })
   }, options.id)
-  await page.evaluate(Native.clickSearchButton)
+  await page.evaluate(Native.performClick(), ButtonSymbol.SEARCH)
   await waitUntilLoadingIsOver(page)
   // 仕入先一覧の先頭行をクリック
   await page.evaluate(_ => document.querySelector('table.body_table tr:nth-child(2) td').click())
@@ -203,10 +204,10 @@ const updateSupplier = async (page, options) => {
   await waitUntilLoadingIsOver(page)
   const result = await page.evaluate(_ => document.getElementById('form1:errorMessage').textContent)
   // 仕入先一覧ページへ戻る
-  await page.evaluate(Native.clickQuitButton)
+  await page.evaluate(Native.performClick(), ButtonSymbol.QUIT)
   await waitUntilLoadingIsOver(page)
   // 仕入先検索ページへ戻る
-  await page.evaluate(Native.clickQuitButton)
+  await page.evaluate(Native.performClick(), ButtonSymbol.QUIT)
   await waitUntilLoadingIsOver(page)
   return {
     message: result
@@ -228,7 +229,7 @@ const promotions = async (page, between) => {
     const rows = document.getElementById('list').native
     return (rows.length === 0) ? [] : rows.map(row => row[0].value)
   })
-  await page.evaluate(Native.clickQuitButton)
+  await page.evaluate(Native.performClick(), ButtonSymbol.QUIT)
   await waitUntilLoadingIsOver(page)
 
   let settings = []
@@ -271,6 +272,60 @@ const promotions = async (page, between) => {
   return settings
 }
 
+const createPromotion = async (page, options) => {
+  await page.evaluate((from, to, rate, targets = []) => {
+    // 設定日付
+    document.getElementById('dateFrom').value = from
+    document.getElementById('dateTo').value = to
+    // 対象店舗を選択
+    for(const element of Array.from(document.querySelectorAll('#dest\\:SELECT span'))) {
+      if(targets.includes(element.value)) {
+        element.setAttribute('selected', 'selected')
+        element.className = "selected";
+      }
+    }
+    // 対象店舗をDBに登録するため、hiddenに値を保存
+    document.getElementById('dest').value = Array.from(document.querySelectorAll('#dest\\:SELECT span'))
+      .filter(x => x.getAttribute('selected') === 'selected')
+      .map(x => x.value)
+      .join('\t')
+
+    // 倍率
+    typeInPointInfo(rate)
+
+    /*
+     * ポイントn倍設定
+     * 新規登録時に優先度をnに設定する。
+     * 編集時に優先度を変更しない。
+     */
+    function typeInPointInfo(n) {
+      if(n < 1) {
+        return;
+      }
+      document.getElementById('input_2:0').value = 1;
+      document.getElementById('input_5:0').value = 1;
+      document.getElementById('input_6:0').value = 1;
+      document.getElementById('input_7:0').value = 100;
+      document.getElementById('input_8:0').value = n;
+      if(document.querySelector('#title span').textContent === 'ポイント設定') {
+        document.getElementById('setSeq').value = n;
+      }
+    }
+  },
+  options.between.from,
+  options.between.to,
+  options.rate,
+  options.targets)
+
+  await page.evaluate(Native.disableConfirmationDialog)
+  await page.evaluate(_ => {
+    document.getElementById('dateFrom').onblur()
+    document.getElementById('dateTo').onblur()
+  })
+  await page.evaluate(Native.performClick(), ButtonSymbol.REGISTER)
+  await waitUntilLoadingIsOver(page)
+}
+
 exports.back = back
 exports.createBrowserInstance = createBrowserInstance
 exports.newPage = newPage
@@ -280,3 +335,4 @@ exports.signIn = signIn
 exports.decideMenuItem = decideMenuItem
 exports.updateSupplier = updateSupplier
 exports.promotions = promotions
+exports.createPromotion = createPromotion

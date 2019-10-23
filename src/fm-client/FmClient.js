@@ -1,8 +1,10 @@
 const Queue = require('../collections/Queue')
-const Promiseable = require('./Promiseable')
-const Nop = require('./Nop')
+const Promiseable = require('./components/Promiseable')
+const Nop = require('./abilities/Nop')
 const ProductMaintenance = require('./abilities/external-interface/ProductMaintenance')
-const fmww = require('../../fmwwService')
+const fmww = require('./core/fmwwService')
+const debug = require('../diagnostics/debug')
+const Supplier = require('./abilities/master/Supplier')
 
 module.exports = class FmClient extends Promiseable {
   constructor() {
@@ -18,9 +20,9 @@ module.exports = class FmClient extends Promiseable {
       // 各リクエストのレスポンスを検知
       this.page.on('response', response => {
         this.responses.enqueue(response)
-        console.log(response.status(), response.url()) // 全リクエストのステータスコードとURLをlog
+        debug.log(response.status(), response.url()) // 全リクエストのステータスコードとURLをlog
         if (300 > response.status() && 200 <= response.status()) return;
-        console.warn('status error', response.status(), response.url()) // ステータスコード200番台以外をlog
+        debug.warn('status error', response.status(), response.url()) // ステータスコード200番台以外をlog
       });
     })
   }
@@ -28,7 +30,10 @@ module.exports = class FmClient extends Promiseable {
   open(url) {
     this.enqueue(async () => {
       this.responses.clear()
-      await this.page.goto(url)
+      await Promise.all([
+        this.page.waitForNavigation({waitUntil: 'networkidle2'}),
+        this.page.goto(url)
+      ])
       return this.responses.dequeue()
     }, [url])
     return this
@@ -49,21 +54,11 @@ module.exports = class FmClient extends Promiseable {
     return this
   }
 
-  createAbility(options = {}) {
-    const path = options.path || 0
-    switch(path) {
-      case ProductMaintenance.path: {
-        this.ability = new ProductMaintenance(this.page)
-        break;
-      }
-
-      default: {
-        this.ability = new Nop()
-        break;
-      }
-    }
+  createAbility(abilityClass) {
+    const AbilityClass = abilityClass || Nop
 
     this.enqueue(async () => {
+      this.ability = new AbilityClass(this.page)
       await this.ability.enable()
       return this.ability
     })
@@ -71,25 +66,34 @@ module.exports = class FmClient extends Promiseable {
   }
 
   search(op) {
-    console.log('FmClient.search')
+    debug.log('FmClient.search')
     this.enqueue(async () => {
       return await this.ability.search(op)
     })
     return this
   }
 
-  create() {
-    console.log('FmClient.create')
+  create(op) {
+    debug.log('FmClient.create')
+    this.enqueue(async () => {
+      return await this.ability.create(op)
+    })
     return this
   }
 
-  update() {
-    console.log('FmClient.update')
+  update(op) {
+    debug.log('FmClient.update')
+    this.enqueue(async () => {
+      return await this.ability.update(op)
+    })
     return this
   }
 
-  delete() {
-    console.log('FmClient.delete')
+  delete(op) {
+    debug.log('FmClient.delete')
+    this.enqueue(async () => {
+      return await this.ability.delete(op)
+    })
     return this
   }
 }

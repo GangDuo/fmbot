@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test/bootstrap.js --recursive test --timeout 10000",
-    "start": "node --require dotenv/config index.js"
+    "start": "node --require dotenv/config goods.js",
+    "goods": "node --require dotenv/config goods.js",
+    "promotion": "node --require dotenv/config promotion.js"
   },
   "repository": {
     "type": "git",
@@ -18,7 +20,9 @@
   },
   "homepage": "https://github.com/GangDuo/fmbot#readme",
   "dependencies": {
+    "commander": "^3.0.1",
     "dotenv": "^8.0.0",
+    "moment": "^2.24.0",
     "puppeteer": "^1.19.0"
   },
   "devDependencies": {

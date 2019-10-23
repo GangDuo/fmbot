@@ -1,7 +1,11 @@
 const { expect } = require('chai');
 const FmClient = require('../../src/fm-client/FmClient');
-const Nop = require('../../src/fm-client/Nop')
+const Nop = require('../../src/fm-client/abilities/Nop')
 const ProductMaintenance = require('../../src/fm-client/abilities/external-interface/ProductMaintenance')
+const Supplier = require('../../src/fm-client/abilities/master/Supplier')
+const MovementExport = require('../../src/fm-client/abilities/movement/MovementExport')
+const Promotion = require('../../src/fm-client/abilities/for-shop/customers/Promotion')
+const Between = require('../../src/fm-client/components/Between')
 
 describe('FmClient', function () {
   let client = null
@@ -44,19 +48,21 @@ describe('FmClient', function () {
   });
 
   it('method chain', async function () {
-    const goods = await client
+    const c = new FmClient()
+    const goods = await c
       .open(process.env.FMWW_SIGN_IN_URL)
       .signIn(user)
       .createAbility()
       .search({jan: jan})
     expect(goods.jan).to.equal(jan);
+    await c.quit()
   });
 
   it('ProductMaintenance', async function () {
-    await client
+    const ability = await client
       .open(process.env.FMWW_SIGN_IN_URL)
       .signIn(user)
-    const ability = await client.createAbility({path: ProductMaintenance.path})
+      .createAbility(ProductMaintenance)
     expect(ability).to.be.an.instanceof(ProductMaintenance);
     
     const goods = await client.search({
@@ -66,5 +72,91 @@ describe('FmClient', function () {
     })
     expect(goods.jan).to.equal(jan);
   });
+
+  it('Supplier', async function () {
+    const c = new FmClient()
+    const ability = await c
+      .open(process.env.FMWW_SIGN_IN_URL)
+      .signIn(user)
+      .createAbility(Supplier)
+    expect(ability).to.be.an.instanceof(Supplier);
+
+    const res = await c.update({
+      id: '9999A',
+      supplierName: 'ﾃｽﾄ（株）'
+    })
+    expect(res.message).to.equal('仕入先を更新しました');
+    await c.quit()
+  });
+
+  it('MovementExport', async function () {
+    const c = new FmClient()
+    const ability = await c
+      .open(process.env.FMWW_SIGN_IN_URL)
+      .signIn(user)
+      .createAbility(MovementExport)
+    expect(ability).to.be.an.instanceof(MovementExport);
+
+    const res = await c.search()
+    expect(res).to.have.lengthOf(1)
+    await c.quit()
+  });
+
+  describe('Promotion', function () {
+    it('search', async function () {
+      const pairs = [
+        [3, new Between('2019-10-01', '2019-10-10')],
+        [0, new Between('2019-09-30', '2019-09-30')]
+      ]
+      const c = new FmClient()
+      const ability = await c
+        .open(process.env.FMWW_SIGN_IN_URL)
+        .signIn(user)
+        .createAbility(Promotion)
+      expect(ability).to.be.an.instanceof(Promotion);
+      for(pair of pairs) {
+        const response = await c.search(pair[1])
+        expect(response).to.have.lengthOf(pair[0])
+      }
+      await c.quit()
+    });
+    it('create', async function () {
+      const c = new FmClient()
+      const ability = await c
+        .open(process.env.FMWW_SIGN_IN_URL)
+        .signIn(user)
+        .createAbility(Promotion)
+      expect(ability).to.be.an.instanceof(Promotion);
+      const response = await c.create({
+        between: new Between('1970-01-01', '1970-01-03'),
+        rate: 10,
+        targets: ['001', '009', '016']
+      })
+      expect(response).be.true
+      await c.quit()
+    });
+    it('update', async function () {
+      const c = new FmClient()
+      const ability = await c
+        .open(process.env.FMWW_SIGN_IN_URL)
+        .signIn(user)
+        .createAbility(Promotion)
+      expect(ability).to.be.an.instanceof(Promotion);
+      const response = await c.update()
+      expect(response).be.true
+      await c.quit()
+    });
+    it('delete', async function () {
+      const c = new FmClient()
+      const ability = await c
+        .open(process.env.FMWW_SIGN_IN_URL)
+        .signIn(user)
+        .createAbility(Promotion)
+      expect(ability).to.be.an.instanceof(Promotion);
+      const response = await c.delete()
+      expect(response).be.true
+      await c.quit()
+    });
+  })
 
 });

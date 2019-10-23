@@ -19,7 +19,7 @@ set "WORK_DIR=%temp%\.fmbot_%yyyy%%mm%%dd%_%hh%%mn%%ss%"
 
 mkdir "%WORK_DIR%"
 
-call npm start "%WORK_DIR%" %*
+call npm start -- -t "%WORK_DIR%" %*
 
 dir /A-D /B /S "%WORK_DIR%" | findstr /i "products\.xlsx$" | cscript //nologo "%FMBOT_HOME%ms-excel\Excel.wsf"
 

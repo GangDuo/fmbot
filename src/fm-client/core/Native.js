@@ -1,10 +1,6 @@
 module.exports = class Native {
-  static clickSearchButton(x) {
-    document.getElementById('search_button').click()
-  }
-
-  static clickExcelButton(x) {
-    document.getElementById('excel_button_ex').click()
+  static performClick() {
+    return id => document.getElementById(id).click()
   }
 
   static signIn(arg) {
@@ -16,5 +12,11 @@ module.exports = class Native {
     setTimeout(() => {
       document.getElementById('form1:login').click()
     }, 100)
+  }
+
+  // 確認ダイアログを上書きして無効にします。
+  static disableConfirmationDialog() {
+    window.confirm = () => { return true }
+    window.alert = () => { return true }
   }
 }

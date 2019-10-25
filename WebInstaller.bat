@@ -5,7 +5,7 @@ pushd "%~dp0"
 cscript.exe //e:jscript //nologo "%~f0" %*
 
 mkdir node_modules
-move .\cli-6.10.3 .\node_modules\npm
+move .\cli-6.12.0 .\node_modules\npm
 copy .\node_modules\npm\bin\npm.cmd .
 echo D | xcopy /e /Y .\fmbot-master .
 del .gitignore README.md
@@ -251,8 +251,8 @@ var BinaryStream = (function() {
   var http = new Http();
   var xs = [
     'https://codeload.github.com/GangDuo/fmbot/zip/master',
-    'http://nodejs.org/dist/latest/win-x64/node.exe',
-    'https://codeload.github.com/npm/cli/zip/v6.10.3'
+    'http://nodejs.org/dist/latest-v10.x/win-x64/node.exe',
+    'https://codeload.github.com/npm/cli/zip/v6.12.0'
   ];
   for(i = 0; i < xs.length; i++) {
     url = xs[i];

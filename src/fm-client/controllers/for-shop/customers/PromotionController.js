@@ -1,6 +1,9 @@
 const FmClient = require('../../../FmClient');
 const Promotion = require('../../../abilities/for-shop/customers/Promotion')
 const Between = require('../../../components/Between')
+const {promisify} = require('util');
+const fs = require("fs");
+const writeFileAsync = promisify(fs.writeFile);
 
 module.exports = class PromotionController {
   static async search(options) {
@@ -18,7 +21,11 @@ module.exports = class PromotionController {
     const response = await c.search(new Between(options.beginDate, options.endDate))
     await c.quit()
 
-    process.stdout.write(JSON.stringify(response, null, 2))
+    const text = JSON.stringify(response, null, 2)
+    process.stdout.write(text)
+    if(options.output) {
+      await writeFileAsync(options.output, text)
+    }
   }
 
   static create(options) {

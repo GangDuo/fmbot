@@ -7,7 +7,8 @@
     "test": "mocha test/bootstrap.js --recursive test --timeout 10000",
     "start": "node --require dotenv/config goods.js",
     "goods": "node --require dotenv/config goods.js",
-    "promotion": "node --require dotenv/config promotion.js"
+    "promotion": "node --require dotenv/config promotion.js",
+    "supplier": "node --require dotenv/config src/supplier.js"
   },
   "repository": {
     "type": "git",

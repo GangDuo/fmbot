@@ -8,6 +8,7 @@ const ProductMaintenance = require('../abilities/external-interface/ProductMaint
 const os = require('os');
 const path = require('path');
 const moment = require('moment');
+const ProgressState = require('../components/ProgressState');
 
 const mkdirAsync = promisify(fs.mkdir);
 
@@ -61,20 +62,6 @@ module.exports = class ApplicationController {
     view.progressBar.step = 1
     view.render()
     await downloader.download(workDir, janCodeList)
-  }
-}
-
-class ProgressState {
-  constructor(op) {
-    this.statusText_ = op.statusText || ''
-    this.percentage_ = op.percentage || 0
-  }
-
-  get statusText() {
-    return this.statusText_
-  }
-  get percentage() {
-    return this.percentage_
   }
 }
 

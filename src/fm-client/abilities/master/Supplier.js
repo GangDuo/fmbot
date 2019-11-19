@@ -38,4 +38,8 @@ module.exports = class Supplier extends AbstractSinglePage {
   delete() {
     debug.log('Supplier.delete')
   }
+
+  export() {
+    debug.log('Supplier.export')
+  }
 }

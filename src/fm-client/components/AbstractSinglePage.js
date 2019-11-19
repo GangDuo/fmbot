@@ -30,4 +30,8 @@ module.exports = class AbstractSinglePage {
   delete() {
     throw new Error('Not Implemented')
   }
+
+  export() {
+    throw new Error('Not Implemented')
+  }
 }

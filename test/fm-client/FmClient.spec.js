@@ -73,22 +73,6 @@ describe('FmClient', function () {
     expect(goods.jan).to.equal(jan);
   });
 
-  it('Supplier', async function () {
-    const c = new FmClient()
-    const ability = await c
-      .open(process.env.FMWW_SIGN_IN_URL)
-      .signIn(user)
-      .createAbility(Supplier)
-    expect(ability).to.be.an.instanceof(Supplier);
-
-    const res = await c.update({
-      id: '9999A',
-      supplierName: 'ﾃｽﾄ（株）'
-    })
-    expect(res.message).to.equal('仕入先を更新しました');
-    await c.quit()
-  });
-
   it('MovementExport', async function () {
     const c = new FmClient()
     const ability = await c
@@ -156,6 +140,37 @@ describe('FmClient', function () {
       const response = await c.delete()
       expect(response).be.true
       await c.quit()
+    });
+  })
+
+  describe('Supplier', function () {
+    const c = new FmClient()
+
+    before(async function() {
+      const ability = await c
+        .open(process.env.FMWW_SIGN_IN_URL)
+        .signIn(user)
+        .createAbility(Supplier)
+      expect(ability).to.be.an.instanceof(Supplier);  
+    }) 
+    
+    after(async function() {
+      await c.quit()
+    }) 
+
+    it('update', async function () {
+      const res = await c.update({
+        id: '9999A',
+        supplierName: 'ﾃｽﾄ（株）'
+      })
+      expect(res.message).to.equal('仕入先を更新しました');
+    });
+
+    it('export', async function () {
+      const response = await c.export({
+        filename: process.cwd()
+      })
+      expect(response).be.true
     });
   })
 

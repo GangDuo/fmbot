@@ -41,5 +41,6 @@ module.exports = class Supplier extends AbstractSinglePage {
 
   export() {
     debug.log('Supplier.export')
+    return Promise.resolve(true)
   }
 }

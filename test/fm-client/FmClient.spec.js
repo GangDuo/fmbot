@@ -87,59 +87,45 @@ describe('FmClient', function () {
   });
 
   describe('Promotion', function () {
+    const c = new FmClient()
+
+    before(async function() {
+      const ability = await c
+        .open(process.env.FMWW_SIGN_IN_URL)
+        .signIn(user)
+        .createAbility(Promotion)
+      expect(ability).to.be.an.instanceof(Promotion);  
+    }) 
+    
+    after(async function() {
+      await c.quit()
+    }) 
+
     it('search', async function () {
       const pairs = [
         [3, new Between('2019-10-01', '2019-10-10')],
         [0, new Between('2019-09-30', '2019-09-30')]
       ]
-      const c = new FmClient()
-      const ability = await c
-        .open(process.env.FMWW_SIGN_IN_URL)
-        .signIn(user)
-        .createAbility(Promotion)
-      expect(ability).to.be.an.instanceof(Promotion);
-      for(pair of pairs) {
+      for(let pair of pairs) {
         const response = await c.search(pair[1])
         expect(response).to.have.lengthOf(pair[0])
       }
-      await c.quit()
     });
     it('create', async function () {
-      const c = new FmClient()
-      const ability = await c
-        .open(process.env.FMWW_SIGN_IN_URL)
-        .signIn(user)
-        .createAbility(Promotion)
-      expect(ability).to.be.an.instanceof(Promotion);
       const response = await c.create({
         between: new Between('1970-01-01', '1970-01-03'),
         rate: 10,
         targets: ['001', '009', '016']
       })
       expect(response).be.true
-      await c.quit()
     });
     it('update', async function () {
-      const c = new FmClient()
-      const ability = await c
-        .open(process.env.FMWW_SIGN_IN_URL)
-        .signIn(user)
-        .createAbility(Promotion)
-      expect(ability).to.be.an.instanceof(Promotion);
       const response = await c.update()
       expect(response).be.true
-      await c.quit()
     });
     it('delete', async function () {
-      const c = new FmClient()
-      const ability = await c
-        .open(process.env.FMWW_SIGN_IN_URL)
-        .signIn(user)
-        .createAbility(Promotion)
-      expect(ability).to.be.an.instanceof(Promotion);
       const response = await c.delete()
       expect(response).be.true
-      await c.quit()
     });
   })
 

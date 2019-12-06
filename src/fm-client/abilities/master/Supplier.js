@@ -1,7 +1,12 @@
 const fmww = require('../../core/fmwwService')
 const AbstractSinglePage = require('../../components/AbstractSinglePage')
 const debug = require('../../../diagnostics/debug')
-const MenuContext = require('../../components/MenuContext')
+const MenuItem = require('../../components/MenuItem')
+
+const CREATE_BUTTON = 2
+const SEARCH_BUTTON = 3
+const EDIT_BUTTON = 4
+const MENU_ITEM = new MenuItem(12, 2, 4)
 
 /*
  * /マスター:各種マスター/仕入先マスター/
@@ -13,7 +18,6 @@ module.exports = class Supplier extends AbstractSinglePage {
 
   async enable() {
     debug.log('Supplier.enable')
-    await fmww.decideMenuItem(this.page, new MenuContext(12, 2, 4, 4))
     return true
   }
 
@@ -32,15 +36,21 @@ module.exports = class Supplier extends AbstractSinglePage {
 
   async update(options) {
     debug.log('Supplier.update')
-    return await fmww.updateSupplier(this.page, options)
+    await super.clickOnMenu(MENU_ITEM, EDIT_BUTTON)
+    const result = await fmww.updateSupplier(this.page, options)
+    await super.backToMainMenu()
+    return result
   }
 
   delete() {
     debug.log('Supplier.delete')
   }
 
-  export() {
+  async export(options) {
     debug.log('Supplier.export')
-    return Promise.resolve(true)
+    await super.clickOnMenu(MENU_ITEM, SEARCH_BUTTON)
+    const result = await fmww.exportSupplier(this.page, options)
+    await super.backToMainMenu()
+    return result
   }
 }

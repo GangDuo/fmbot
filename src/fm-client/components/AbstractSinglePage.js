@@ -1,3 +1,6 @@
+const fmww = require('../core/fmwwService')
+const MenuContext = require('./MenuContext')
+
 module.exports = class AbstractSinglePage {
   get page() {
     return this.page_
@@ -33,5 +36,13 @@ module.exports = class AbstractSinglePage {
 
   export() {
     throw new Error('Not Implemented')
+  }
+
+  async clickOnMenu(menuItem, button) {
+    await fmww.decideMenuItem(this.page, new MenuContext(menuItem, button))
+  }
+
+  async backToMainMenu() {
+    await fmww.back(this.page)
   }
 }

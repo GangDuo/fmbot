@@ -168,7 +168,7 @@ describe('FmClient', function () {
 
     it('export', async function () {
       const response = await c.export({
-        filename: process.cwd()
+        filename: 'supplier.csv'
       })
       expect(response).be.true
     });

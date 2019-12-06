@@ -73,22 +73,6 @@ describe('FmClient', function () {
     expect(goods.jan).to.equal(jan);
   });
 
-  it('Supplier', async function () {
-    const c = new FmClient()
-    const ability = await c
-      .open(process.env.FMWW_SIGN_IN_URL)
-      .signIn(user)
-      .createAbility(Supplier)
-    expect(ability).to.be.an.instanceof(Supplier);
-
-    const res = await c.update({
-      id: '9999A',
-      supplierName: 'ﾃｽﾄ（株）'
-    })
-    expect(res.message).to.equal('仕入先を更新しました');
-    await c.quit()
-  });
-
   it('MovementExport', async function () {
     const c = new FmClient()
     const ability = await c
@@ -103,59 +87,76 @@ describe('FmClient', function () {
   });
 
   describe('Promotion', function () {
+    const c = new FmClient()
+
+    before(async function() {
+      const ability = await c
+        .open(process.env.FMWW_SIGN_IN_URL)
+        .signIn(user)
+        .createAbility(Promotion)
+      expect(ability).to.be.an.instanceof(Promotion);  
+    }) 
+    
+    after(async function() {
+      await c.quit()
+    }) 
+
     it('search', async function () {
       const pairs = [
         [3, new Between('2019-10-01', '2019-10-10')],
         [0, new Between('2019-09-30', '2019-09-30')]
       ]
-      const c = new FmClient()
-      const ability = await c
-        .open(process.env.FMWW_SIGN_IN_URL)
-        .signIn(user)
-        .createAbility(Promotion)
-      expect(ability).to.be.an.instanceof(Promotion);
-      for(pair of pairs) {
+      for(let pair of pairs) {
         const response = await c.search(pair[1])
         expect(response).to.have.lengthOf(pair[0])
       }
-      await c.quit()
     });
     it('create', async function () {
-      const c = new FmClient()
-      const ability = await c
-        .open(process.env.FMWW_SIGN_IN_URL)
-        .signIn(user)
-        .createAbility(Promotion)
-      expect(ability).to.be.an.instanceof(Promotion);
       const response = await c.create({
         between: new Between('1970-01-01', '1970-01-03'),
         rate: 10,
         targets: ['001', '009', '016']
       })
       expect(response).be.true
-      await c.quit()
     });
     it('update', async function () {
-      const c = new FmClient()
-      const ability = await c
-        .open(process.env.FMWW_SIGN_IN_URL)
-        .signIn(user)
-        .createAbility(Promotion)
-      expect(ability).to.be.an.instanceof(Promotion);
       const response = await c.update()
       expect(response).be.true
-      await c.quit()
     });
     it('delete', async function () {
-      const c = new FmClient()
+      const response = await c.delete()
+      expect(response).be.true
+    });
+  })
+
+  describe('Supplier', function () {
+    const c = new FmClient()
+
+    before(async function() {
       const ability = await c
         .open(process.env.FMWW_SIGN_IN_URL)
         .signIn(user)
-        .createAbility(Promotion)
-      expect(ability).to.be.an.instanceof(Promotion);
-      const response = await c.delete()
-      expect(response).be.true
+        .createAbility(Supplier)
+      expect(ability).to.be.an.instanceof(Supplier);  
+    }) 
+    
+    after(async function() {
       await c.quit()
+    }) 
+
+    it('update', async function () {
+      const res = await c.update({
+        id: '9999A',
+        supplierName: 'ﾃｽﾄ（株）'
+      })
+      expect(res.message).to.equal('仕入先を更新しました');
+    });
+
+    it('export', async function () {
+      const response = await c.export({
+        filename: 'supplier.csv'
+      })
+      expect(response).be.true
     });
   })
 

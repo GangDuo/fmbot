@@ -58,19 +58,44 @@ describe('FmClient', function () {
     await c.quit()
   });
 
-  it('ProductMaintenance', async function () {
-    const ability = await client
-      .open(process.env.FMWW_SIGN_IN_URL)
-      .signIn(user)
-      .createAbility(ProductMaintenance)
-    expect(ability).to.be.an.instanceof(ProductMaintenance);
+  describe('ProductMaintenance', function () {
+    const c = new FmClient()
+
+    before(async function() {
+      const ability = await c
+        .open(process.env.FMWW_SIGN_IN_URL)
+        .signIn(user)
+        .createAbility(ProductMaintenance)
+      expect(ability).to.be.an.instanceof(ProductMaintenance);  
+    }) 
     
-    const goods = await client.search({
-      saveTo: process.cwd(),
-      barcode: jan,
-      prefix: '0'.repeat(4)
-    })
-    expect(goods.jan).to.equal(jan);
+    after(async function() {
+      await c.quit()
+    }) 
+
+    it('search', async function () {
+      const goods = await c.search({
+        saveTo: process.cwd(),
+        barcode: jan,
+        prefix: '0'.repeat(4)
+      })
+      expect(goods.jan).to.equal(jan);
+    });
+
+    it('create', async function () {
+      const response = await c.create()
+      expect(response).be.true
+    });
+
+    it('update', async function () {
+      const response = await c.update()
+      expect(response).be.true
+    });
+
+    it('delete',async function () {
+      const response = await c.delete()
+      expect(response).be.true
+    });
   });
 
   describe('MovementExport', function () {

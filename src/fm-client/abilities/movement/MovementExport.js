@@ -44,13 +44,21 @@ module.exports = class MovementExport extends AbstractSinglePage {
 
   create() {
     debug.log('MovementExport.create')
+    return true
   }
 
   update() {
     debug.log('MovementExport.update')
+    return true
   }
 
   delete() {
     debug.log('MovementExport.delete')
+    return true
+  }
+
+  export(options) {
+    debug.log('MovementExport.export')
+    return true
   }
 }

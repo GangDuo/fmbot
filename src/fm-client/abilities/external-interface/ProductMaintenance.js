@@ -31,13 +31,16 @@ module.exports = class ProductMaintenance extends AbstractSinglePage {
 
   create() {
     debug.log('ProductMaintenance.create')
+    return true
   }
 
   update() {
     debug.log('ProductMaintenance.update')
+    return true
   }
 
   delete() {
     debug.log('ProductMaintenance.delete')
+    return true
   }
 }

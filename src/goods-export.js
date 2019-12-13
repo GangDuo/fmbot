@@ -1,5 +1,5 @@
 const program = require('commander');
-const ApplicationController =require('./src/fm-client/controllers/ApplicationController');
+const ApplicationController =require('./fm-client/controllers/ApplicationController');
 
 // コマンドライン引数
 for (let i = 0; i < process.argv.length; i++) {

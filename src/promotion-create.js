@@ -1,6 +1,6 @@
 const moment = require('moment');
 const program = require('commander');
-const PromotionController = require('./src/fm-client/controllers/for-shop/customers/PromotionController')
+const PromotionController = require('./fm-client/controllers/for-shop/customers/PromotionController')
 
 program
 .option('-b, --begin-date <date>', '設定日付 自', moment().format('YYYY-MM-DD'))

@@ -343,6 +343,23 @@ const exportSupplier = async (page, options) => {
   return Promise.resolve(true)
 }
 
+const exportMovement = async (page, options) => {
+  await page.evaluate(Native.performClick(), ButtonSymbol.CSV)
+  await waitUntilLoadingIsOver(page)
+
+  // ダウンロード処理
+  const uint8 = await download(page)
+  const xs = Object.keys(uint8).map(key => uint8[key])
+  const content = Buffer.from(xs)
+  // encodingをnullにして、生データのまま書き込む
+  await writeFileAsync(options.filename, content, {encoding: null});
+
+  // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
+  await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())
+  await sleep(500)
+  return Promise.resolve(true)
+}
+
 exports.back = back
 exports.createBrowserInstance = createBrowserInstance
 exports.newPage = newPage
@@ -354,3 +371,4 @@ exports.updateSupplier = updateSupplier
 exports.promotions = promotions
 exports.createPromotion = createPromotion
 exports.exportSupplier = exportSupplier
+exports.exportMovement = exportMovement

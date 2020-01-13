@@ -1,5 +1,6 @@
 const debug = require('../../../../diagnostics/debug')
 const AbstractSinglePage = require('../../../components/AbstractSinglePage')
+const fmww = require('../../../core/fmwwService')
 const MenuItem = require('../../../components/MenuItem')
 
 const EXECUTION_BUTTON = 2
@@ -20,6 +21,6 @@ module.exports = class Schedule extends AbstractSinglePage {
 
   async create(options) {
     await super.clickOnMenu(MENU_ITEM, EXECUTION_BUTTON)
-    return true
+    return await fmww.applyInventory(this.page, options)
   }
 }

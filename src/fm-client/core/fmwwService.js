@@ -14,6 +14,10 @@ const sleep = (ms) => {
   })
 }
 
+const getDisplayedErrorMessage = async (page) => {
+  return await page.evaluate(_ => document.getElementById('form1:errorMessage').textContent)
+}
+
 const waitUntilLoadingIsOver = async (page) => {
   const  disableTimeout = {timeout: 0}
   await page.waitFor(() => !!document.querySelector('#loading'), disableTimeout)
@@ -195,14 +199,12 @@ const updateSupplier = async (page, options) => {
       document.getElementById('sup_nm').value = supplierName  // 名称
     }
   }, options.supplierName)
+  // 確認ダイアログ無効
+  await page.evaluate(Native.disableConfirmationDialog)
   // 保存
-  await page.evaluate(supplierName => {
-    // 確認ダイアログ無効
-    window.confirm = () => { return true }
-    document.getElementById('register_button').click()
-  })
+  await page.evaluate(Native.performClick(), ButtonSymbol.REGISTER)
   await waitUntilLoadingIsOver(page)
-  const result = await page.evaluate(_ => document.getElementById('form1:errorMessage').textContent)
+  const result = await getDisplayedErrorMessage(page)
   // 仕入先一覧ページへ戻る
   await page.evaluate(Native.performClick(), ButtonSymbol.QUIT)
   await waitUntilLoadingIsOver(page)
@@ -360,6 +362,26 @@ const exportMovement = async (page, options) => {
   return Promise.resolve(true)
 }
 
+const applyInventory = async (page, options) => {
+  await page.evaluate(x => document.getElementById('stocktaking_date').value = x, options.stocktakingDate)// "yyyy年m月d日"
+  await page.evaluate(x => document.getElementById('location:dest').value = x, options.storeCodes.join('\t'))
+  if(options.zeroFill) {
+    // 実棚にないSKUの更新
+    await page.evaluate(_ => document.getElementById('form1:check01').click())
+  }
+  // 常に在庫テーブル更新しない
+  await page.evaluate(_ => document.getElementById('stockTableUpdate').value = 1)
+
+  await page.evaluate(Native.disableConfirmationDialog)
+  await page.evaluate(Native.performClick(), ButtonSymbol.EXECUTE)
+  await waitUntilLoadingIsOver(page)
+  const message = await getDisplayedErrorMessage(page)
+  return {
+    isSuccess: "棚卸更新を実行し、差異伝票を作成しました。" === message,
+    statusText: message
+  }
+}
+
 exports.back = back
 exports.createBrowserInstance = createBrowserInstance
 exports.newPage = newPage
@@ -372,3 +394,4 @@ exports.promotions = promotions
 exports.createPromotion = createPromotion
 exports.exportSupplier = exportSupplier
 exports.exportMovement = exportMovement
+exports.applyInventory = applyInventory

@@ -24,7 +24,14 @@ describe('Schedule', function () {
   })
 
   it('create', async function () {
-    const response = await c.create()
-    expect(response).be.true
+    const response = await c.create({
+      stocktakingDate: '2019-12-27',
+      storeCodes: ["99999"],
+      zeroFill: false
+    })
+    expect(response).to.deep.equal({
+      isSuccess: false,
+      statusText: "更新対象となる伝票が存在しません。"
+    });
   });
 })

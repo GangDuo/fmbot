@@ -382,6 +382,30 @@ const applyInventory = async (page, options) => {
   }
 }
 
+const createPoints = async (page, options) => {
+  const items = [['pointCd', 'membershipNumber'], // 会員番号
+                 ['destCd', 'storeCode'],         // 発行店舗
+                 ['personCd', 'owner'],           // 入力担当者
+                 ['addpoint', 'points'],          // 発行ポイント
+                 ['reason', 'grounds']]           // 事由
+  for(const item of items) {
+    await page.evaluate((key, x) => document.getElementById(key).value = x, item[0], options[item[1]])
+  }
+  // hidden要素に値設定
+  await page.evaluate(_ => seekPointCard())
+  await sleep(1000)
+  
+  await page.evaluate(Native.performClick(), ButtonSymbol.REGISTER)
+  await waitUntilLoadingIsOver(page)
+  const message = await getDisplayedErrorMessage(page)
+
+  return {
+    options: options,
+    isSuccess: RegExp('ポイント加算伝票\\[\\d*\\]を登録しました。').test(message),
+    statusText: message
+  }
+}
+
 exports.back = back
 exports.createBrowserInstance = createBrowserInstance
 exports.newPage = newPage
@@ -395,3 +419,4 @@ exports.createPromotion = createPromotion
 exports.exportSupplier = exportSupplier
 exports.exportMovement = exportMovement
 exports.applyInventory = applyInventory
+exports.createPoints = createPoints

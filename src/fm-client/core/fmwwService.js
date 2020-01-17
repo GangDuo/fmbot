@@ -37,6 +37,12 @@ function debugOf(page) {
   return page
 }
 
+const closeDownloadBox = async (page) => {
+  // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
+  await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())
+  await sleep(500)
+}
+
 const createBrowserInstance = () => {
   return new Promise(async (success, failure) => {
     try{
@@ -131,10 +137,7 @@ const downloadProductsExcel = async (page, options) => {
   const content = Buffer.from(xs)
   // encodingをnullにして、生データのまま書き込む
   await writeFileAsync(path.join(options.saveTo, filename), content, {encoding: null});
-
-  // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
-  await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())
-  await sleep(500)
+  await closeDownloadBox(page)
 }
 
 const signIn = async (page, user) => {
@@ -338,10 +341,7 @@ const exportSupplier = async (page, options) => {
   const content = Buffer.from(xs)
   // encodingをnullにして、生データのまま書き込む
   await writeFileAsync(options.filename, content, {encoding: null});
-
-  // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
-  await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())
-  await sleep(500)
+  await closeDownloadBox(page)
   return Promise.resolve(true)
 }
 
@@ -355,10 +355,7 @@ const exportMovement = async (page, options) => {
   const content = Buffer.from(xs)
   // encodingをnullにして、生データのまま書き込む
   await writeFileAsync(options.filename, content, {encoding: null});
-
-  // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
-  await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())
-  await sleep(500)
+  await closeDownloadBox(page)
   return Promise.resolve(true)
 }
 

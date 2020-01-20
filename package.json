@@ -9,7 +9,8 @@
     "goods": "node --require dotenv/config src/goods.js",
     "promotion": "node --require dotenv/config src/promotion.js",
     "supplier": "node --require dotenv/config src/supplier.js",
-    "inventory": "node --require dotenv/config src/inventory.js"
+    "inventory": "node --require dotenv/config src/inventory.js",
+    "points": "node --require dotenv/config src/points.js"
   },
   "repository": {
     "type": "git",

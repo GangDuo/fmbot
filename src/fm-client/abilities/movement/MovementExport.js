@@ -1,5 +1,10 @@
+const fmww = require('../../core/fmwwService')
 const AbstractSinglePage = require('../../components/AbstractSinglePage')
 const debug = require('../../../diagnostics/debug')
+const MenuItem = require('../../components/MenuItem')
+
+const SEARCH_BUTTON = 2
+const MENU_ITEM = new MenuItem(11, 1, 3)
 
 /*
  * /移動:移動/移動エクスポート/ 
@@ -57,8 +62,11 @@ module.exports = class MovementExport extends AbstractSinglePage {
     return true
   }
 
-  export(options) {
+  async export(options) {
     debug.log('MovementExport.export')
-    return true
+    await super.clickOnMenu(MENU_ITEM, SEARCH_BUTTON)
+    const result = await fmww.exportMovement(this.page, options).catch(_ => false)
+    await super.backToMainMenu()
+    return result
   }
 }

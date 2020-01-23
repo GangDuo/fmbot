@@ -14,6 +14,10 @@ const sleep = (ms) => {
   })
 }
 
+const getDisplayedErrorMessage = async (page) => {
+  return await page.evaluate(_ => document.getElementById('form1:errorMessage').textContent)
+}
+
 const waitUntilLoadingIsOver = async (page) => {
   const  disableTimeout = {timeout: 0}
   await page.waitFor(() => !!document.querySelector('#loading'), disableTimeout)
@@ -31,6 +35,12 @@ function debugOf(page) {
   const isDebug = false
   page.screenshotIfDebug = isDebug ? page.screenshot : () => { return Promise.resolve() }
   return page
+}
+
+const closeDownloadBox = async (page) => {
+  // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
+  await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())
+  await sleep(500)
 }
 
 const createBrowserInstance = () => {
@@ -127,10 +137,7 @@ const downloadProductsExcel = async (page, options) => {
   const content = Buffer.from(xs)
   // encodingをnullにして、生データのまま書き込む
   await writeFileAsync(path.join(options.saveTo, filename), content, {encoding: null});
-
-  // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
-  await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())
-  await sleep(500)
+  await closeDownloadBox(page)
 }
 
 const signIn = async (page, user) => {
@@ -195,14 +202,12 @@ const updateSupplier = async (page, options) => {
       document.getElementById('sup_nm').value = supplierName  // 名称
     }
   }, options.supplierName)
+  // 確認ダイアログ無効
+  await page.evaluate(Native.disableConfirmationDialog)
   // 保存
-  await page.evaluate(supplierName => {
-    // 確認ダイアログ無効
-    window.confirm = () => { return true }
-    document.getElementById('register_button').click()
-  })
+  await page.evaluate(Native.performClick(), ButtonSymbol.REGISTER)
   await waitUntilLoadingIsOver(page)
-  const result = await page.evaluate(_ => document.getElementById('form1:errorMessage').textContent)
+  const result = await getDisplayedErrorMessage(page)
   // 仕入先一覧ページへ戻る
   await page.evaluate(Native.performClick(), ButtonSymbol.QUIT)
   await waitUntilLoadingIsOver(page)
@@ -336,11 +341,66 @@ const exportSupplier = async (page, options) => {
   const content = Buffer.from(xs)
   // encodingをnullにして、生データのまま書き込む
   await writeFileAsync(options.filename, content, {encoding: null});
-
-  // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
-  await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())
-  await sleep(500)
+  await closeDownloadBox(page)
   return Promise.resolve(true)
+}
+
+const exportMovement = async (page, options) => {
+  await page.evaluate(Native.performClick(), ButtonSymbol.CSV)
+  await waitUntilLoadingIsOver(page)
+
+  // ダウンロード処理
+  const uint8 = await download(page)
+  const xs = Object.keys(uint8).map(key => uint8[key])
+  const content = Buffer.from(xs)
+  // encodingをnullにして、生データのまま書き込む
+  await writeFileAsync(options.filename, content, {encoding: null});
+  await closeDownloadBox(page)
+  return Promise.resolve(true)
+}
+
+const applyInventory = async (page, options) => {
+  await page.evaluate(x => document.getElementById('stocktaking_date').value = x, options.stocktakingDate)// "yyyy年m月d日"
+  await page.evaluate(x => document.getElementById('location:dest').value = x, options.storeCodes.join('\t'))
+  if(options.zeroFill) {
+    // 実棚にないSKUの更新
+    await page.evaluate(_ => document.getElementById('form1:check01').click())
+  }
+  // 常に在庫テーブル更新しない
+  await page.evaluate(_ => document.getElementById('stockTableUpdate').value = 1)
+
+  await page.evaluate(Native.disableConfirmationDialog)
+  await page.evaluate(Native.performClick(), ButtonSymbol.EXECUTE)
+  await waitUntilLoadingIsOver(page)
+  const message = await getDisplayedErrorMessage(page)
+  return {
+    isSuccess: "棚卸更新を実行し、差異伝票を作成しました。" === message,
+    statusText: message
+  }
+}
+
+const createPoints = async (page, options) => {
+  const items = [['pointCd', 'membershipNumber'], // 会員番号
+                 ['destCd', 'storeCode'],         // 発行店舗
+                 ['personCd', 'owner'],           // 入力担当者
+                 ['addpoint', 'points'],          // 発行ポイント
+                 ['reason', 'grounds']]           // 事由
+  for(const item of items) {
+    await page.evaluate((key, x) => document.getElementById(key).value = x, item[0], options[item[1]])
+  }
+  // hidden要素に値設定
+  await page.evaluate(_ => seekPointCard())
+  await sleep(1000)
+  
+  await page.evaluate(Native.performClick(), ButtonSymbol.REGISTER)
+  await waitUntilLoadingIsOver(page)
+  const message = await getDisplayedErrorMessage(page)
+
+  return {
+    options: options,
+    isSuccess: RegExp('ポイント加算伝票\\[\\d*\\]を登録しました。').test(message),
+    statusText: message
+  }
 }
 
 exports.back = back
@@ -354,3 +414,6 @@ exports.updateSupplier = updateSupplier
 exports.promotions = promotions
 exports.createPromotion = createPromotion
 exports.exportSupplier = exportSupplier
+exports.exportMovement = exportMovement
+exports.applyInventory = applyInventory
+exports.createPoints = createPoints

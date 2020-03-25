@@ -2,9 +2,10 @@ const Queue = require('../collections/Queue')
 const Promiseable = require('./components/Promiseable')
 const Nop = require('./abilities/Nop')
 const ProductMaintenance = require('./abilities/external-interface/ProductMaintenance')
-const fmww = require('./core/fmwwService')
+const Browser = require('./components/Browser')
 const debug = require('../diagnostics/debug')
 const Supplier = require('./abilities/master/Supplier')
+const Auth = require('./abilities/Auth')
 
 module.exports = class FmClient extends Promiseable {
   constructor() {
@@ -12,10 +13,12 @@ module.exports = class FmClient extends Promiseable {
 
     // initialize
     this.responses = new Queue
+    this.browser = new Browser()
 
     this.enqueue(async () => {
-      this.browser = await fmww.createBrowserInstance()
-      this.page = await fmww.newPage(this.browser)
+      await this.browser.launch()
+      await this.browser.newPage()
+      this.page = this.browser.page
 
       // 各リクエストのレスポンスを検知
       this.page.on('response', response => {
@@ -48,7 +51,8 @@ module.exports = class FmClient extends Promiseable {
 
   signIn(user) {
     this.enqueue(async () => {
-      await fmww.signIn(this.page, user)
+      const auth = new Auth(this.page)
+      await auth.signIn(user)
       return true
     }, [user])
     return this

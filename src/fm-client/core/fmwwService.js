@@ -1,8 +1,7 @@
-const puppeteer = require('puppeteer');
 const path = require('path');
 const {promisify} = require('util');
 const fs = require('fs');
-const Native = require('./Native');
+const Native = require('../components/Native');
 const ButtonSymbol = require('./ButtonSymbol');
 const debug = require('../../diagnostics/debug')
 
@@ -31,38 +30,10 @@ const back = async (page) => {
   ])
 }
 
-function debugOf(page) {
-  const isDebug = false
-  page.screenshotIfDebug = isDebug ? page.screenshot : () => { return Promise.resolve() }
-  return page
-}
-
 const closeDownloadBox = async (page) => {
   // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
   await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())
   await sleep(500)
-}
-
-const createBrowserInstance = () => {
-  return new Promise(async (success, failure) => {
-    try{
-      const browser = await puppeteer.launch({
-        headless: true,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--window-size=500,500',
-        ]
-      });
-      success(browser)
-    } catch (err) {
-      failure(err)
-    }
-  })
-}
-
-const newPage = async (browser) => {
-  return debugOf(await browser.newPage())
 }
 
 // 部門コード全取得
@@ -138,21 +109,6 @@ const downloadProductsExcel = async (page, options) => {
   // encodingをnullにして、生データのまま書き込む
   await writeFileAsync(path.join(options.saveTo, filename), content, {encoding: null});
   await closeDownloadBox(page)
-}
-
-const signIn = async (page, user) => {
-  await  page.waitForSelector('#form1\\:client')
-  await Promise.all([
-    page.evaluate(Native.signIn, user || {
-         FMWW_ACCESS_KEY_ID     : process.env.FMWW_ACCESS_KEY_ID,
-         FMWW_USER_NAME         : process.env.FMWW_USER_NAME,
-         FMWW_SECRET_ACCESS_KEY : process.env.FMWW_SECRET_ACCESS_KEY,
-         FMWW_PASSWORD          : process.env.FMWW_PASSWORD }),
-    page.waitForNavigation({timeout: 60000, waitUntil: 'domcontentloaded'})
-  ])
-  debug.log('signined')
-  await page.screenshotIfDebug({ path: 'signined.png' });
-  return Promise.resolve(true)
 }
 
 const decideMenuItem = async (page, context) => {
@@ -404,11 +360,8 @@ const createPoints = async (page, options) => {
 }
 
 exports.back = back
-exports.createBrowserInstance = createBrowserInstance
-exports.newPage = newPage
 exports.fetchItems = fetchItems
 exports.downloadProductsExcel = downloadProductsExcel
-exports.signIn = signIn
 exports.decideMenuItem = decideMenuItem
 exports.updateSupplier = updateSupplier
 exports.promotions = promotions

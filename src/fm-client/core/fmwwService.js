@@ -7,16 +7,19 @@ const debug = require('../../diagnostics/debug')
 
 const writeFileAsync = promisify(fs.writeFile);
 
+// TODO: components下へ移動
 const sleep = (ms) => {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
 }
 
+// TODO: AbstractSinglePageへ移動したので削除予定
 const getDisplayedErrorMessage = async (page) => {
   return await page.evaluate(_ => document.getElementById('form1:errorMessage').textContent)
 }
 
+// TODO: AbstractSinglePageへ移動したので削除予定
 const waitUntilLoadingIsOver = async (page) => {
   const  disableTimeout = {timeout: 0}
   await page.waitFor(() => !!document.querySelector('#loading'), disableTimeout)
@@ -335,30 +338,6 @@ const applyInventory = async (page, options) => {
   }
 }
 
-const createPoints = async (page, options) => {
-  const items = [['pointCd', 'membershipNumber'], // 会員番号
-                 ['destCd', 'storeCode'],         // 発行店舗
-                 ['personCd', 'owner'],           // 入力担当者
-                 ['addpoint', 'points'],          // 発行ポイント
-                 ['reason', 'grounds']]           // 事由
-  for(const item of items) {
-    await page.evaluate((key, x) => document.getElementById(key).value = x, item[0], options[item[1]])
-  }
-  // hidden要素に値設定
-  await page.evaluate(_ => seekPointCard())
-  await sleep(1000)
-  
-  await page.evaluate(Native.performClick(), ButtonSymbol.REGISTER)
-  await waitUntilLoadingIsOver(page)
-  const message = await getDisplayedErrorMessage(page)
-
-  return {
-    options: options,
-    isSuccess: RegExp('ポイント加算伝票\\[\\d*\\]を登録しました。').test(message),
-    statusText: message
-  }
-}
-
 exports.back = back
 exports.fetchItems = fetchItems
 exports.downloadProductsExcel = downloadProductsExcel
@@ -369,4 +348,3 @@ exports.createPromotion = createPromotion
 exports.exportSupplier = exportSupplier
 exports.exportMovement = exportMovement
 exports.applyInventory = applyInventory
-exports.createPoints = createPoints

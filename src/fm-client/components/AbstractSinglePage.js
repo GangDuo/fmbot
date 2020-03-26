@@ -45,4 +45,16 @@ module.exports = class AbstractSinglePage {
   async backToMainMenu() {
     await fmww.back(this.page)
   }
+
+  async getDisplayedErrorMessage() {
+    const page = this.page
+    return await page.evaluate(_ => document.getElementById('form1:errorMessage').textContent)
+  }
+  
+  async waitUntilLoadingIsOver() {
+    const page = this.page
+    const  disableTimeout = {timeout: 0}
+    await page.waitFor(() => !!document.querySelector('#loading'), disableTimeout)
+    await page.waitFor(() => document.querySelector('#loading').style.display === 'none', disableTimeout)
+  }  
 }

@@ -248,26 +248,6 @@ const exportMovement = async (page, options) => {
   return Promise.resolve(true)
 }
 
-const applyInventory = async (page, options) => {
-  await page.evaluate(x => document.getElementById('stocktaking_date').value = x, options.stocktakingDate)// "yyyy年m月d日"
-  await page.evaluate(x => document.getElementById('location:dest').value = x, options.storeCodes.join('\t'))
-  if(options.zeroFill) {
-    // 実棚にないSKUの更新
-    await page.evaluate(_ => document.getElementById('form1:check01').click())
-  }
-  // 常に在庫テーブル更新しない
-  await page.evaluate(_ => document.getElementById('stockTableUpdate').value = 1)
-
-  await page.evaluate(Native.disableConfirmationDialog)
-  await page.evaluate(Native.performClick(), ButtonSymbol.EXECUTE)
-  await waitUntilLoadingIsOver(page)
-  const message = await getDisplayedErrorMessage(page)
-  return {
-    isSuccess: "棚卸更新を実行し、差異伝票を作成しました。" === message,
-    statusText: message
-  }
-}
-
 exports.fetchItems = fetchItems
 exports.downloadProductsExcel = downloadProductsExcel
 exports.decideMenuItem = decideMenuItem
@@ -275,4 +255,3 @@ exports.updateSupplier = updateSupplier
 exports.createPromotion = createPromotion
 exports.exportSupplier = exportSupplier
 exports.exportMovement = exportMovement
-exports.applyInventory = applyInventory

@@ -25,7 +25,7 @@ describe('Schedule', function () {
 
   it('create', async function () {
     const response = await c.create({
-      stocktakingDate: '2019-12-27',
+      stocktakingDate: '2099-12-31',
       storeCodes: ["99999"],
       zeroFill: false
     })

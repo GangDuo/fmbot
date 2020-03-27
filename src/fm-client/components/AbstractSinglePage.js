@@ -1,5 +1,7 @@
 const fmww = require('../core/fmwwService')
 const MenuContext = require('./MenuContext')
+const Native = require('./Native');
+const ButtonSymbol = require('../core/ButtonSymbol');
 
 module.exports = class AbstractSinglePage {
   get page() {
@@ -43,7 +45,7 @@ module.exports = class AbstractSinglePage {
   }
 
   async backToMainMenu() {
-    await fmww.back(this.page)
+    await this.back()
   }
 
   async getDisplayedErrorMessage() {
@@ -56,5 +58,13 @@ module.exports = class AbstractSinglePage {
     const  disableTimeout = {timeout: 0}
     await page.waitFor(() => !!document.querySelector('#loading'), disableTimeout)
     await page.waitFor(() => document.querySelector('#loading').style.display === 'none', disableTimeout)
-  }  
+  }
+
+  async back() {
+    const page = this.page
+    await Promise.all([
+      page.evaluate(Native.performClick(), ButtonSymbol.QUIT),
+      page.waitForNavigation({timeout: 60000, waitUntil: 'domcontentloaded'})
+    ])
+  }
 }

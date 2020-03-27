@@ -33,6 +33,7 @@ describe('Points', function () {
       grounds: '04'
     })
     expect(response.isSuccess).be.true
+    expect(response.statusText).to.match(/^ポイント加算伝票\[\d*\]を登録しました。$/);
   });
 
   it('search', async function () {

@@ -2,6 +2,9 @@ const fmww = require('../../core/fmwwService')
 const AbstractSinglePage = require('../../components/AbstractSinglePage')
 const debug = require('../../../diagnostics/debug')
 const MenuItem = require('../../components/MenuItem')
+const Native = require('../../components/Native');
+const ButtonSymbol = require('../../core/ButtonSymbol');
+const {writeFileAsync} = require('../../components/Helpers');
 
 const SEARCH_BUTTON = 2
 const MENU_ITEM = new MenuItem(11, 1, 3)
@@ -65,8 +68,24 @@ module.exports = class MovementExport extends AbstractSinglePage {
   async export(options) {
     debug.log('MovementExport.export')
     await super.clickOnMenu(MENU_ITEM, SEARCH_BUTTON)
-    const result = await fmww.exportMovement(this.page, options).catch(_ => false)
+    const result = await this.exportMovement_(options).catch(e => {console.log(e);return false;})
     await super.backToMainMenu()
     return result
+  }
+
+  async exportMovement_(options) {
+    const page = super.page
+
+    await page.evaluate(Native.performClick(), ButtonSymbol.CSV)
+    await super.waitUntilLoadingIsOver()
+  
+    // ダウンロード処理
+    const uint8 = await fmww.download(page)
+    const xs = Object.keys(uint8).map(key => uint8[key])
+    const content = Buffer.from(xs)
+    // encodingをnullにして、生データのまま書き込む
+    await writeFileAsync(options.filename, content, {encoding: null});
+    await super.closeDownloadBox()
+    return Promise.resolve(true)
   }
 }

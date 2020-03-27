@@ -179,23 +179,8 @@ const createPromotion = async (page, options) => {
   await waitUntilLoadingIsOver(page)
 }
 
-const exportMovement = async (page, options) => {
-  await page.evaluate(Native.performClick(), ButtonSymbol.CSV)
-  await waitUntilLoadingIsOver(page)
-
-  // ダウンロード処理
-  const uint8 = await download(page)
-  const xs = Object.keys(uint8).map(key => uint8[key])
-  const content = Buffer.from(xs)
-  // encodingをnullにして、生データのまま書き込む
-  await writeFileAsync(options.filename, content, {encoding: null});
-  await closeDownloadBox(page)
-  return Promise.resolve(true)
-}
-
 exports.download = download
 exports.fetchItems = fetchItems
 exports.downloadProductsExcel = downloadProductsExcel
 exports.decideMenuItem = decideMenuItem
 exports.createPromotion = createPromotion
-exports.exportMovement = exportMovement

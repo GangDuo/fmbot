@@ -3,18 +3,12 @@ const AbstractSinglePage = require('../../../components/AbstractSinglePage')
 const Native = require('../../../components/Native');
 const ButtonSymbol = require('../../../core/ButtonSymbol');
 const MenuItem = require('../../../components/MenuItem')
+const {sleep} = require('../../../components/Helpers');
 
 const CREATE_BUTTON = 2
 const INDEX_BUTTON = 3
 const EDIT_BUTTON = 4
 const MENU_ITEM = new MenuItem(7, 2, 2)
-
-// TODO: components下へ移動
-const sleep = (ms) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
-}
 
 /*
  * /店舗管理:店舗顧客/ポイント入力/

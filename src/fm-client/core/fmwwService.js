@@ -4,15 +4,9 @@ const fs = require('fs');
 const Native = require('../components/Native');
 const ButtonSymbol = require('./ButtonSymbol');
 const debug = require('../../diagnostics/debug')
+const {sleep} = require('../components/Helpers');
 
 const writeFileAsync = promisify(fs.writeFile);
-
-// TODO: components下へ移動
-const sleep = (ms) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
-}
 
 // TODO: AbstractSinglePageへ移動したので削除予定
 const getDisplayedErrorMessage = async (page) => {

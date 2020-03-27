@@ -2,6 +2,7 @@ const fmww = require('../core/fmwwService')
 const MenuContext = require('./MenuContext')
 const Native = require('./Native');
 const ButtonSymbol = require('../core/ButtonSymbol');
+const {sleep} = require('./Helpers');
 
 module.exports = class AbstractSinglePage {
   get page() {
@@ -66,5 +67,12 @@ module.exports = class AbstractSinglePage {
       page.evaluate(Native.performClick(), ButtonSymbol.QUIT),
       page.waitForNavigation({timeout: 60000, waitUntil: 'domcontentloaded'})
     ])
+  }
+
+  async closeDownloadBox() {
+    const page = this.page
+    // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
+    await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())
+    await sleep(500)
   }
 }

@@ -1,12 +1,8 @@
 const path = require('path');
-const {promisify} = require('util');
-const fs = require('fs');
 const Native = require('../components/Native');
 const ButtonSymbol = require('./ButtonSymbol');
 const debug = require('../../diagnostics/debug')
-const {sleep} = require('../components/Helpers');
-
-const writeFileAsync = promisify(fs.writeFile);
+const {sleep, writeFileAsync} = require('../components/Helpers');
 
 // TODO: AbstractSinglePageへ移動したので削除予定
 const getDisplayedErrorMessage = async (page) => {
@@ -20,7 +16,7 @@ const waitUntilLoadingIsOver = async (page) => {
   await page.waitFor(() => document.querySelector('#loading').style.display === 'none', disableTimeout)
 }
 
-
+// TODO: AbstractSinglePageへ移動したので削除予定
 const closeDownloadBox = async (page) => {
   // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
   await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())
@@ -129,43 +125,6 @@ const decideMenuItem = async (page, context) => {
   await page.screenshotIfDebug({ path: 'criteria.png' });
 }
 
-const updateSupplier = async (page, options) => {
-  if(!options.id) {
-    throw new Error('')
-  }
-  await page.evaluate(x => {
-    ['sup_cd_from', 'sup_cd_to'].forEach((id) => {
-      document.getElementById(id).value = x
-    })
-  }, options.id)
-  await page.evaluate(Native.performClick(), ButtonSymbol.SEARCH)
-  await waitUntilLoadingIsOver(page)
-  // 仕入先一覧の先頭行をクリック
-  await page.evaluate(_ => document.querySelector('table.body_table tr:nth-child(2) td').click())
-  await waitUntilLoadingIsOver(page)
-  // 編集
-  await page.evaluate(supplierName => {
-    if(supplierName) {
-      document.getElementById('sup_nm').value = supplierName  // 名称
-    }
-  }, options.supplierName)
-  // 確認ダイアログ無効
-  await page.evaluate(Native.disableConfirmationDialog)
-  // 保存
-  await page.evaluate(Native.performClick(), ButtonSymbol.REGISTER)
-  await waitUntilLoadingIsOver(page)
-  const result = await getDisplayedErrorMessage(page)
-  // 仕入先一覧ページへ戻る
-  await page.evaluate(Native.performClick(), ButtonSymbol.QUIT)
-  await waitUntilLoadingIsOver(page)
-  // 仕入先検索ページへ戻る
-  await page.evaluate(Native.performClick(), ButtonSymbol.QUIT)
-  await waitUntilLoadingIsOver(page)
-  return {
-    message: result
-  }
-}
-
 const createPromotion = async (page, options) => {
   await page.evaluate((from, to, rate, targets = []) => {
     // 設定日付
@@ -220,20 +179,6 @@ const createPromotion = async (page, options) => {
   await waitUntilLoadingIsOver(page)
 }
 
-const exportSupplier = async (page, options) => {
-  await page.evaluate(Native.performClick(), ButtonSymbol.CSV)
-  await waitUntilLoadingIsOver(page)
-
-  // ダウンロード処理
-  const uint8 = await download(page)
-  const xs = Object.keys(uint8).map(key => uint8[key])
-  const content = Buffer.from(xs)
-  // encodingをnullにして、生データのまま書き込む
-  await writeFileAsync(options.filename, content, {encoding: null});
-  await closeDownloadBox(page)
-  return Promise.resolve(true)
-}
-
 const exportMovement = async (page, options) => {
   await page.evaluate(Native.performClick(), ButtonSymbol.CSV)
   await waitUntilLoadingIsOver(page)
@@ -248,10 +193,9 @@ const exportMovement = async (page, options) => {
   return Promise.resolve(true)
 }
 
+exports.download = download
 exports.fetchItems = fetchItems
 exports.downloadProductsExcel = downloadProductsExcel
 exports.decideMenuItem = decideMenuItem
-exports.updateSupplier = updateSupplier
 exports.createPromotion = createPromotion
-exports.exportSupplier = exportSupplier
 exports.exportMovement = exportMovement

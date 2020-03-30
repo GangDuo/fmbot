@@ -5,7 +5,11 @@ const debug = require('../../../diagnostics/debug')
 const MenuContext = require('../../components/MenuContext')
 const Native = require('../../components/Native');
 const ButtonSymbol = require('../../core/ButtonSymbol');
+const MenuItem = require('../../components/MenuItem')
 const {writeFileAsync} = require('../../components/Helpers');
+
+const INDEX_BUTTON = 3
+const MENU_ITEM = new MenuItem(14, 1, 4)
 
 /*
  * /外部インターフェース:対HT/商品マスタメンテナンス/ 
@@ -22,7 +26,7 @@ module.exports = class ProductMaintenance extends AbstractSinglePage {
 
   async enable() {
     debug.log('ProductMaintenance.enable')
-    await fmww.decideMenuItem(this.page, new MenuContext(14, 1, 4, 3))
+    await super.clickOnMenu(MENU_ITEM, INDEX_BUTTON)
     this.items_ = await this.fetchItems_()
     return true
   }

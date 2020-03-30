@@ -1,25 +1,11 @@
 const Native = require('../components/Native');
 const ButtonSymbol = require('./ButtonSymbol');
-const debug = require('../../diagnostics/debug')
-const {sleep, writeFileAsync} = require('../components/Helpers');
-
-// TODO: AbstractSinglePageへ移動したので削除予定
-const getDisplayedErrorMessage = async (page) => {
-  return await page.evaluate(_ => document.getElementById('form1:errorMessage').textContent)
-}
 
 // TODO: AbstractSinglePageへ移動したので削除予定
 const waitUntilLoadingIsOver = async (page) => {
   const  disableTimeout = {timeout: 0}
   await page.waitFor(() => !!document.querySelector('#loading'), disableTimeout)
   await page.waitFor(() => document.querySelector('#loading').style.display === 'none', disableTimeout)
-}
-
-// TODO: AbstractSinglePageへ移動したので削除予定
-const closeDownloadBox = async (page) => {
-  // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
-  await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())
-  await sleep(500)
 }
 
 const download = async (page) => {
@@ -64,33 +50,6 @@ const download = async (page) => {
         return params;
       }
     }, {timeout: 0})
-}
-
-const decideMenuItem = async (page, context) => {
-  const catergory = context.catergory
-  const subcatergory = context.subcatergory
-  const command = context.command
-  const action = context.action
-
-  // 外部インターフェース -> 対HT -> 商品マスタメンテナンス -> 照会
-  await page.waitForSelector('#menu\\:0 div:nth-child(' + catergory + ')')
-  await page.evaluate((catergory, subcatergory) => {
-    document.querySelector('#menu\\:0 div:nth-child(' + catergory + ')').click()
-    document.querySelector('#menu\\:1 div:nth-child(' + subcatergory + ')').click()
-  }, catergory, subcatergory),
-  await page.waitForSelector('#menu\\:2 div:nth-child(' + command + ') div:nth-child(' + action + ')')
-  debug.log('menu')
-  await page.screenshotIfDebug({ path: 'menu.png' });
-
-  await Promise.all([
-    page.evaluate((command, action) => {
-      document.querySelector('#menu\\:2 div:nth-child(' + command + ') div:nth-child(' + action + ')').click()
-    }, command, action),
-    page.waitForNavigation({timeout: 60000, waitUntil: 'domcontentloaded'})
-  ])
-  await waitUntilLoadingIsOver(page)
-  debug.log('criteria')
-  await page.screenshotIfDebug({ path: 'criteria.png' });
 }
 
 const createPromotion = async (page, options) => {
@@ -148,5 +107,4 @@ const createPromotion = async (page, options) => {
 }
 
 exports.download = download
-exports.decideMenuItem = decideMenuItem
 exports.createPromotion = createPromotion

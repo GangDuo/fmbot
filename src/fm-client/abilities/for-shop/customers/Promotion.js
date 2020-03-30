@@ -1,6 +1,5 @@
 const debug = require('../../../../diagnostics/debug')
 const AbstractSinglePage = require('../../../components/AbstractSinglePage')
-const fmww = require('../../../core/fmwwService')
 const Native = require('../../../components/Native');
 const ButtonSymbol = require('../../../core/ButtonSymbol');
 const MenuItem = require('../../../components/MenuItem')
@@ -32,7 +31,7 @@ module.exports = class Promotion extends AbstractSinglePage {
 
   async create(options) {
     await super.clickOnMenu(MENU_ITEM, CREATE_BUTTON)
-    await fmww.createPromotion(this.page, options)
+    await this.createPromotion_(options)
     return true
   }
 
@@ -106,4 +105,59 @@ module.exports = class Promotion extends AbstractSinglePage {
     }
     return settings
   }
+
+  async createPromotion_(options) {
+    const page = super.page
+    await page.evaluate((from, to, rate, targets = []) => {
+      // 設定日付
+      document.getElementById('dateFrom').value = from
+      document.getElementById('dateTo').value = to
+      // 対象店舗を選択
+      for(const element of Array.from(document.querySelectorAll('#dest\\:SELECT span'))) {
+        if(targets.includes(element.value)) {
+          element.setAttribute('selected', 'selected')
+          element.className = "selected";
+        }
+      }
+      // 対象店舗をDBに登録するため、hiddenに値を保存
+      document.getElementById('dest').value = Array.from(document.querySelectorAll('#dest\\:SELECT span'))
+        .filter(x => x.getAttribute('selected') === 'selected')
+        .map(x => x.value)
+        .join('\t')
+  
+      // 倍率
+      typeInPointInfo(rate)
+  
+      /*
+       * ポイントn倍設定
+       * 新規登録時に優先度をnに設定する。
+       * 編集時に優先度を変更しない。
+       */
+      function typeInPointInfo(n) {
+        if(n < 1) {
+          return;
+        }
+        document.getElementById('input_2:0').value = 1;
+        document.getElementById('input_5:0').value = 1;
+        document.getElementById('input_6:0').value = 1;
+        document.getElementById('input_7:0').value = 100;
+        document.getElementById('input_8:0').value = n;
+        if(document.querySelector('#title span').textContent === 'ポイント設定') {
+          document.getElementById('setSeq').value = n;
+        }
+      }
+    },
+    options.between.from,
+    options.between.to,
+    options.rate,
+    options.targets)
+  
+    await page.evaluate(Native.disableConfirmationDialog)
+    await page.evaluate(_ => {
+      document.getElementById('dateFrom').onblur()
+      document.getElementById('dateTo').onblur()
+    })
+    await page.evaluate(Native.performClick(), ButtonSymbol.REGISTER)
+    await super.waitUntilLoadingIsOver()
+  }  
 }

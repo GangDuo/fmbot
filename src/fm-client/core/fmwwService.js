@@ -1,4 +1,3 @@
-const path = require('path');
 const Native = require('../components/Native');
 const ButtonSymbol = require('./ButtonSymbol');
 const debug = require('../../diagnostics/debug')
@@ -21,15 +20,6 @@ const closeDownloadBox = async (page) => {
   // 閉じるボタンをクリックして、非表示にしている検索条件入力画面を表示する
   await page.evaluate(_ => document.querySelector('div.excelDLDiv input[name=cls]').click())
   await sleep(500)
-}
-
-// 部門コード全取得
-// 戻り値：[[部門コード,部門名]]
-const fetchItems = async (page) => {
-  return await page
-    .evaluate(async () => {
-      return Array.from(document.getElementById('item_list:select').children).map(a => a.textContent.split(/\s+/))
-    }, {timeout: 0})
 }
 
 const download = async (page) => {
@@ -74,28 +64,6 @@ const download = async (page) => {
         return params;
       }
     }, {timeout: 0})
-}
-
-// 検索条件にマッチする商品マスタエクセルをローカル保存して、検索条件入力画面に戻す
-const downloadProductsExcel = async (page, options) => {
-  const itemCode = options.itemCode || ''
-  const barcode = options.barcode || ''
-  const prefix = options.prefix ? options.prefix : (itemCode ? itemCode + '_' : barcode + '_')
-  const filename = prefix + 'products.xlsx'
-
-  await page.evaluate(x => document.getElementById('item_list').value = x, itemCode)
-  await page.evaluate(x => document.getElementById('barcode').value = x, barcode)
-  await page.evaluate(Native.performClick(), ButtonSymbol.EXCEL)
-  await waitUntilLoadingIsOver(page)
-  await page.screenshotIfDebug({ path: 'is_ready_to_download_' + filename + '.png' });
-
-  // ダウンロード処理
-  const uint8 = await download(page)
-  const xs = Object.keys(uint8).map(key => uint8[key])
-  const content = Buffer.from(xs)
-  // encodingをnullにして、生データのまま書き込む
-  await writeFileAsync(path.join(options.saveTo, filename), content, {encoding: null});
-  await closeDownloadBox(page)
 }
 
 const decideMenuItem = async (page, context) => {
@@ -180,7 +148,5 @@ const createPromotion = async (page, options) => {
 }
 
 exports.download = download
-exports.fetchItems = fetchItems
-exports.downloadProductsExcel = downloadProductsExcel
 exports.decideMenuItem = decideMenuItem
 exports.createPromotion = createPromotion

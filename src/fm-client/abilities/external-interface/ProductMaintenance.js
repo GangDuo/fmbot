@@ -4,7 +4,7 @@ const AbstractSinglePage = require('../../components/AbstractSinglePage')
 const debug = require('../../../diagnostics/debug')
 const MenuContext = require('../../components/MenuContext')
 const Native = require('../../components/Native');
-const ButtonSymbol = require('../../core/ButtonSymbol');
+const ButtonSymbol = require('../../components/ButtonSymbol');
 const MenuItem = require('../../components/MenuItem')
 const {writeFileAsync} = require('../../components/Helpers');
 

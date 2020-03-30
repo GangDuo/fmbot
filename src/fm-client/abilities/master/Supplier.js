@@ -3,7 +3,7 @@ const AbstractSinglePage = require('../../components/AbstractSinglePage')
 const debug = require('../../../diagnostics/debug')
 const MenuItem = require('../../components/MenuItem')
 const Native = require('../../components/Native');
-const ButtonSymbol = require('../../core/ButtonSymbol');
+const ButtonSymbol = require('../../components/ButtonSymbol');
 const {writeFileAsync} = require('../../components/Helpers');
 
 const CREATE_BUTTON = 2

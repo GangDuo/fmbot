@@ -1,7 +1,7 @@
 const debug = require('../../../../diagnostics/debug')
 const AbstractSinglePage = require('../../../components/AbstractSinglePage')
 const Native = require('../../../components/Native');
-const ButtonSymbol = require('../../../core/ButtonSymbol');
+const ButtonSymbol = require('../../../components/ButtonSymbol');
 const MenuItem = require('../../../components/MenuItem')
 const {sleep} = require('../../../components/Helpers');
 

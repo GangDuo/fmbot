@@ -1,7 +1,7 @@
 const fmww = require('../core/fmwwService')
 const MenuContext = require('./MenuContext')
 const Native = require('./Native');
-const ButtonSymbol = require('../core/ButtonSymbol');
+const ButtonSymbol = require('./ButtonSymbol');
 const {sleep} = require('./Helpers');
 const debug = require('../../diagnostics/debug')
 

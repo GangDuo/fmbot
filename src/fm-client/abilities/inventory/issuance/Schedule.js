@@ -2,7 +2,7 @@ const debug = require('../../../../diagnostics/debug')
 const AbstractSinglePage = require('../../../components/AbstractSinglePage')
 const MenuItem = require('../../../components/MenuItem')
 const Native = require('../../../components/Native');
-const ButtonSymbol = require('../../../core/ButtonSymbol');
+const ButtonSymbol = require('../../../components/ButtonSymbol');
 
 const EXECUTION_BUTTON = 2
 const MENU_ITEM = new MenuItem(10, 2, 2)

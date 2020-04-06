@@ -1,5 +1,4 @@
-const FmClient = require('../../../FmClient');
-const Schedule = require('../../../abilities/inventory/issuance/Schedule')
+const {FmClient, Schedule} = require('fmww-library');
 
 module.exports = class InventoryScheduleController {
   static async create(options) {

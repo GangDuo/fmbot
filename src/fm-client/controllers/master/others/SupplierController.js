@@ -2,8 +2,7 @@ const os = require('os');
 const path = require('path');
 const fs = require('fs');
 const iconv = require('iconv-lite');
-const FmClient = require('../../../FmClient');
-const Supplier = require('../../../abilities/master/Supplier')
+const {FmClient, Supplier} = require('fmww-library');
 
 module.exports = class SupplierController {
   static search(options) {

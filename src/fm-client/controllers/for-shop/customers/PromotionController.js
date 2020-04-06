@@ -1,6 +1,4 @@
-const FmClient = require('../../../FmClient');
-const Promotion = require('../../../abilities/for-shop/customers/Promotion')
-const Between = require('../../../components/Between')
+const {FmClient, Promotion, Between} = require('fmww-library');
 const {promisify} = require('util');
 const fs = require("fs");
 const writeFileAsync = promisify(fs.writeFile);

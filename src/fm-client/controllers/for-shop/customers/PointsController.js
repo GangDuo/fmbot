@@ -1,5 +1,4 @@
-const FmClient = require('../../../FmClient');
-const Points = require('../../../abilities/for-shop/customers/Points')
+const {FmClient, Points} = require('fmww-library');
 
 module.exports = class PointsController {
   static search(options) {

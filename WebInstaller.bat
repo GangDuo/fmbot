@@ -251,7 +251,7 @@ var BinaryStream = (function() {
   var http = new Http();
   var xs = [
     'https://codeload.github.com/GangDuo/fmbot/zip/master',
-    'http://nodejs.org/dist/latest-v10.x/win-x64/node.exe',
+    'https://nodejs.org/dist/latest-v10.x/win-x64/node.exe',
     'https://codeload.github.com/npm/cli/zip/v6.12.0'
   ];
   for(i = 0; i < xs.length; i++) {

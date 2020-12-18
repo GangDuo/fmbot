@@ -1,7 +1,7 @@
 @echo off
 
 :apply
-npm run inventory -- apply %*
+call npm run inventory -- apply %*
 
 if not %ERRORLEVEL% == 0 (
   echo ERROR: Failed to apply inventory

@@ -1,6 +1,9 @@
 @echo off
 
 :apply
+echo 更新を開始します。
+rem キャンセル可能時間を5秒とする
+timeout 5 /nobreak
 call npm run inventory -- apply %*
 
 if not %ERRORLEVEL% == 0 (

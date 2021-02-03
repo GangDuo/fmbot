@@ -5,12 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test/bootstrap.js --recursive test --timeout 10000",
-    "start": "node --require dotenv/config src/goods.js",
-    "goods": "node --require dotenv/config src/goods.js",
-    "promotion": "node --require dotenv/config src/promotion.js",
-    "supplier": "node --require dotenv/config src/supplier.js",
-    "inventory": "node --require dotenv/config src/inventory.js",
-    "points": "node --require dotenv/config src/points.js"
+    "start": "node --harmony --require dotenv/config src/goods.js",
+    "goods": "node --harmony --require dotenv/config src/goods.js",
+    "promotion": "node --harmony --require dotenv/config src/promotion.js",
+    "supplier": "node --harmony --require dotenv/config src/supplier.js",
+    "inventory": "node --harmony --require dotenv/config src/inventory.js",
+    "points": "node --harmony --require dotenv/config src/points.js"
   },
   "repository": {
     "type": "git",
@@ -23,14 +23,14 @@
   },
   "homepage": "https://github.com/GangDuo/fmbot#readme",
   "dependencies": {
-    "commander": "^3.0.1",
-    "dotenv": "^8.0.0",
+    "commander": "^7.0.0",
+    "dotenv": "^8.2.0",
     "fmww-library": "github:GangDuo/fmww-library-js",
-    "iconv-lite": "^0.5.0",
-    "moment": "^2.24.0"
+    "iconv-lite": "^0.5.2",
+    "moment": "^2.29.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^6.2.0"
+    "mocha": "^6.2.3"
   }
 }

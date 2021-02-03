@@ -21,6 +21,6 @@ mkdir "%WORK_DIR%"
 
 call npm run goods -- export -t "%WORK_DIR%" %*
 
-dir /A-D /B /S "%WORK_DIR%" | findstr /i "products\.xlsx$" | cscript //nologo "%FMBOT_HOME%ms-excel\Excel.wsf"
+dir /A-D /B /S "%WORK_DIR%" | findstr /i "products\.xlsx$" | C:\Windows\System32\cscript //nologo "%FMBOT_HOME%ms-excel\Excel.wsf"
 
 rmdir /s /q "%WORK_DIR%"

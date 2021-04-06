@@ -13,13 +13,16 @@ module.exports = class GoodsImageController {
       readline.createInterface({
         input: process.stdin
       })
-      .on('line', (line) => {
-        console.log(`model number is %s`, line)
-      })
+      .on('line', GoodsImageController.handleReadLine_)
       .on('close', () => {
         console.log("END!");
       });      
     }
+  }
+
+  static handleReadLine_(line) {
+    if(line.length === 0) return
+    console.log(`model number is %s`, line)
   }
 
   static handleDragDrop_ = (array) => new Promise((resolve, reject) => {
@@ -32,10 +35,7 @@ module.exports = class GoodsImageController {
           readline.createInterface({
             input: fs.createReadStream(x)
           })
-          .on('line', (line) => {
-            if(line.length === 0) return
-            console.log(`model number is %s`, line)
-          })
+          .on('line', GoodsImageController.handleReadLine_)
           .on('close', () => {
             console.log("END!");
             setImmediate(() => {

@@ -1,4 +1,5 @@
 const readline = require('readline');
+var fs = require('fs');
 
 module.exports = class GoodsImageController {
   static async export(others, options) {
@@ -6,7 +7,7 @@ module.exports = class GoodsImageController {
     if (others.length > 0) {
       // ファイルドロップ
       const result = await GoodsImageController.handleDragDrop_(others).catch(e => e)
-      console.log(result)
+      console.log(result)      
     } else {
       // 標準入力
       readline.createInterface({
@@ -28,10 +29,19 @@ module.exports = class GoodsImageController {
         try {
           // do something
           console.log(x)
-
-          setImmediate(() => {
-            next(xs)
-          });
+          readline.createInterface({
+            input: fs.createReadStream(x)
+          })
+          .on('line', (line) => {
+            if(line.length === 0) return
+            console.log(`model number is %s`, line)
+          })
+          .on('close', () => {
+            console.log("END!");
+            setImmediate(() => {
+              next(xs)
+            });
+          });     
         } catch (error) {
           reject(error)
         }

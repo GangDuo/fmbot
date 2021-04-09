@@ -39,14 +39,14 @@ module.exports = class Downloader extends EventEmitter {
     this.emit('Downloaded', options)
   }
 
-  async downloadImagesBy(rl) {
+  async downloadImagesBy(rl, options) {
     for await (const line of rl) {
       if(line.length === 0) continue;
-  
-      await this.download({
+
+      await this.download(Object.assign({
         baseURL: process.env.FMWW_SIGN_IN_URL,
         modelNumber: line
-      })
+      }, options))
     }
   }
 }

@@ -32,13 +32,13 @@ module.exports = class GoodsImageController {
 
     if (others.length > 0) {
       // ファイルドロップ
-      await instance.handleDragDrop_(others).catch(e => e)
+      await instance.handleDragDrop_(others, options).catch(e => e)
     } else {
       // 標準入力
       const rl = readline.createInterface({
         input: process.stdin
       })
-      await instance.downloader.downloadImagesBy(rl)
+      await instance.downloader.downloadImagesBy(rl, options)
     }
     await instance.downloader.tearDown()
   }
@@ -47,7 +47,7 @@ module.exports = class GoodsImageController {
     this.downloader = downloader
   }
 
-  handleDragDrop_(array) {
+  handleDragDrop_(array, options) {
     return new Promise(async(resolve, reject) => {
       const next = async (xs) => {
         const x = xs.shift();
@@ -58,7 +58,7 @@ module.exports = class GoodsImageController {
             const rl = readline.createInterface({
               input: fs.createReadStream(x)
             })
-            await this.downloader.downloadImagesBy(rl)
+            await this.downloader.downloadImagesBy(rl, options)
             await next(xs)
           } catch (error) {
             reject(error)

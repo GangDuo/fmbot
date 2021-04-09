@@ -5,6 +5,7 @@ module.exports = class Downloader extends EventEmitter {
   constructor() {
     super()
     this.fmClient = new FmClient()
+    this.errors = []
   }
 
   async setUp() {
@@ -21,7 +22,7 @@ module.exports = class Downloader extends EventEmitter {
 
   async tearDown() {
     await this.fmClient.quit()
-    this.emit('Quit')
+    this.emit('Quit', {hasError: this.errors.length > 0, errors: this.errors})
   }
 
   async download(options) {
@@ -31,7 +32,10 @@ module.exports = class Downloader extends EventEmitter {
     // ここでnew FmClientすると画像枚数分のブラウザインスタンスを生成しようとして
     // リソース上限に達し失敗する
     this.emit('StartDownloading', options)
-    await this.fmClient.export(options).catch(e => this.emit('Exception', e))
+    await this.fmClient.export(options).catch(e => {
+      this.errors.push(e)
+      this.emit('Exception', e)
+    })
     this.emit('Downloaded', options)
   }
 

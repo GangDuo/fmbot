@@ -1,5 +1,6 @@
 const readline = require('readline');
 var fs = require('fs');
+const ora = require('ora');
 
 const Downloader = require('./Downloader');
 
@@ -8,19 +9,30 @@ module.exports = class GoodsImageController {
     console.log("goods-image-export");
     const downloader = new Downloader()
     // for view
-    downloader.on('Ready', () => {console.log('Ready')})
-    downloader.on('Quit', () => {console.log('Quit')})
-    downloader.on('StartDownloading', ({modelNumber}) => {console.log(`model number is %s`, modelNumber)})
-    downloader.on('Downloaded', ({modelNumber}) => {console.log('Downloaded %s', modelNumber)})
-    downloader.on('Exception', (e) => {console.error(e)})
+    const spinner = ora('ログイン中').start();
+    downloader.on('Ready', () => {spinner.text = 'Ready'})
+    downloader.on('Quit', ({hasError}) => {
+      spinner.text = 'Quit'
+      if(hasError) spinner.fail()
+      else spinner.succeed()
+    })
+    downloader.on('StartDownloading', ({modelNumber}) => {
+      spinner.text = `model number is ${modelNumber}`
+    })
+    downloader.on('Downloaded', ({modelNumber}) => {
+      spinner.text = `Downloaded ${modelNumber}`
+    })
+    downloader.on('Exception', (e) => {
+      spinner.color = 'red';
+      spinner.text = e
+    })
 
     const instance = new GoodsImageController(downloader)
     await instance.downloader.setUp()
 
     if (others.length > 0) {
       // ファイルドロップ
-      const result = await instance.handleDragDrop_(others).catch(e => e)
-      console.log(result)      
+      await instance.handleDragDrop_(others).catch(e => e)
     } else {
       // 標準入力
       const rl = readline.createInterface({
@@ -42,7 +54,7 @@ module.exports = class GoodsImageController {
         if(x) {
           try {
             // do something
-            console.log(x)
+            //console.log(x)
             const rl = readline.createInterface({
               input: fs.createReadStream(x)
             })

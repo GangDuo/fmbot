@@ -10,18 +10,19 @@ module.exports = class GoodsImageController {
       const result = await GoodsImageController.handleDragDrop_(others).catch(e => e)
       console.log(result)      
     } else {
+      const instance = new GoodsImageController()
       // 標準入力
       readline.createInterface({
         input: process.stdin
       })
-      .on('line', GoodsImageController.handleReadLine_)
+      .on('line', instance.handleReadLine_.bind(instance))
       .on('close', () => {
         console.log("END!");
       });      
     }
   }
 
-  static async handleReadLine_(line) {
+  async handleReadLine_(line) {
     if(line.length === 0) return
     console.log(`model number is %s`, line)
 
@@ -46,12 +47,13 @@ module.exports = class GoodsImageController {
       const x = xs.shift();
       if(x) {
         try {
+          const instance = new GoodsImageController()
           // do something
           console.log(x)
           readline.createInterface({
             input: fs.createReadStream(x)
           })
-          .on('line', GoodsImageController.handleReadLine_)
+          .on('line', instance.handleReadLine_.bind(instance))
           .on('close', () => {
             console.log("END!");
             setImmediate(() => {

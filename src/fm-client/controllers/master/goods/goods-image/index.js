@@ -1,5 +1,6 @@
 const readline = require('readline');
 var fs = require('fs');
+const {FmClient, GoodsImage} = require('fmww-library');
 
 module.exports = class GoodsImageController {
   static async export(others, options) {
@@ -20,9 +21,24 @@ module.exports = class GoodsImageController {
     }
   }
 
-  static handleReadLine_(line) {
+  static async handleReadLine_(line) {
     if(line.length === 0) return
     console.log(`model number is %s`, line)
+
+    await new FmClient()
+      .open(process.env.FMWW_SIGN_IN_URL)
+      .signIn({
+        FMWW_ACCESS_KEY_ID     : process.env.FMWW_ACCESS_KEY_ID,
+        FMWW_USER_NAME         : process.env.FMWW_USER_NAME,
+        FMWW_SECRET_ACCESS_KEY : process.env.FMWW_SECRET_ACCESS_KEY,
+        FMWW_PASSWORD          : process.env.FMWW_PASSWORD
+      })
+      .createAbility(GoodsImage)
+      .export({
+        baseURL: process.env.FMWW_SIGN_IN_URL,
+        modelNumber: line
+      })
+      .quit()
   }
 
   static handleDragDrop_ = (array) => new Promise((resolve, reject) => {

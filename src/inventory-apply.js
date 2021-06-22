@@ -1,4 +1,5 @@
 const program = require('commander');
+const { commaSeparatedList } = require('./util');
 const InventoryScheduleController = require('./fm-client/controllers/inventory/issuance/InventoryScheduleController')
 
 program
@@ -7,7 +8,3 @@ program
 .option('-s, --store-codes <codes>', '「,」区切りの店舗コード', commaSeparatedList)
 .action(InventoryScheduleController.create)
 .parse(process.argv)
-
-function commaSeparatedList(value, dummyPrevious) {
-  return value.split(',');
-}

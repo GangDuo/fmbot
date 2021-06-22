@@ -1,5 +1,6 @@
 const moment = require('moment');
 const program = require('commander');
+const { commaSeparatedList } = require('./util');
 const PromotionController = require('./fm-client/controllers/for-shop/customers/PromotionController')
 
 program
@@ -9,7 +10,3 @@ program
 .option('-s, --store-codes <codes>', '「,」区切りの店舗コード', commaSeparatedList)
 .action(PromotionController.create)
 .parse(process.argv)
-
-function commaSeparatedList(value, dummyPrevious) {
-  return value.split(',');
-}

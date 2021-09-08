@@ -12,7 +12,8 @@
     "inventory": "node --harmony --require dotenv/config src/inventory.js",
     "points": "node --harmony --require dotenv/config src/points.js",
     "image": "node --harmony --require dotenv/config src/goods-image.js",
-    "mv": "node --harmony --require dotenv/config src/movement.js"
+    "mv": "node --harmony --require dotenv/config src/movement.js",
+    "purchasing": "node --harmony --require dotenv/config src/purchasing.js"
   },
   "repository": {
     "type": "git",
